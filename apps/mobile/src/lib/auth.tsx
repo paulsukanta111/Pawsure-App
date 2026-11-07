@@ -6,6 +6,9 @@
  *    the screen shows the demo code, and the app signs in to the shared demo
  *    owner account in Supabase (supabase/seed/demo_account.sql). Real RLS applies.
  *  - 'otp': real phone OTP through Supabase Auth; needs an SMS provider (DLT for India).
+ *  - 'local': the shareable web prototype. Same screens and demo code, but nothing
+ *    leaves the device (the prototype page cannot call external services). A flag in
+ *    localStorage remembers the sign-in; no credentials or tokens are stored.
  *
  * The demo credentials ship in the app bundle on purpose: they only unlock the
  * demo household on the dev project. Never seed this account on the pilot project.
@@ -14,8 +17,11 @@ import type { Session } from '@supabase/supabase-js';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { sendOtp, supabase, toE164India, verifyOtp } from './supabase';
 
-export type AuthMode = 'demo' | 'otp';
-export const AUTH_MODE: AuthMode = process.env.EXPO_PUBLIC_AUTH_MODE === 'otp' ? 'otp' : 'demo';
+export type AuthMode = 'demo' | 'otp' | 'local';
+const envMode = process.env.EXPO_PUBLIC_AUTH_MODE;
+export const AUTH_MODE: AuthMode = envMode === 'otp' || envMode === 'local' ? envMode : 'demo';
+const LOCAL_KEY = 'pawsure.prototype.signedIn';
+const LOCAL_USER_ID = 'local-demo-owner';
 export const DEMO_CODE = '123456';
 const DEMO_ACCOUNT = { email: 'demo.owner@example.com', password: 'pawsure-demo-2026' };
 export const CONSENT_VERSION = 'terms-privacy-2026-11-v1';
@@ -24,6 +30,9 @@ type Result = { ok: true } | { ok: false; message: string };
 
 interface AuthValue {
   session: Session | null;
+  /** Signed in, in any mode. Use this (not `session`) to guard screens. */
+  signedIn: boolean;
+  userId: string | null;
   /** True until the stored session has been restored on launch. */
   restoring: boolean;
   mode: AuthMode;
@@ -37,8 +46,14 @@ const AuthContext = createContext<AuthValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [restoring, setRestoring] = useState(true);
+  const [localSignedIn, setLocalSignedIn] = useState(false);
 
   useEffect(() => {
+    if (AUTH_MODE === 'local') {
+      setLocalSignedIn(readLocal());
+      setRestoring(false);
+      return;
+    }
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setRestoring(false);
@@ -50,18 +65,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AuthValue>(
     () => ({
       session,
+      signedIn: AUTH_MODE === 'local' ? localSignedIn : !!session,
+      userId: AUTH_MODE === 'local' ? (localSignedIn ? LOCAL_USER_ID : null) : session?.user.id ?? null,
       restoring,
       mode: AUTH_MODE,
       async requestCode(phoneInput) {
         const phone = toE164India(phoneInput);
         if (!phone) return { ok: false, message: 'Enter a 10-digit Indian mobile number.' };
-        if (AUTH_MODE === 'demo') return { ok: true, phone };
+        if (AUTH_MODE !== 'otp') return { ok: true, phone };
         const { error } = await sendOtp(phone);
         return error ? { ok: false, message: friendly(error.message) } : { ok: true, phone };
       },
       async confirmCode(phone, code, language) {
         const clean = code.replace(/\D/g, '');
         if (clean.length !== 6) return { ok: false, message: 'Enter the 6-digit code.' };
+        if (AUTH_MODE === 'local') {
+          if (clean !== DEMO_CODE) return { ok: false, message: 'That code is not right. In demo mode the code is shown above.' };
+          writeLocal(true);
+          setLocalSignedIn(true);
+          return { ok: true };
+        }
         if (AUTH_MODE === 'demo') {
           if (clean !== DEMO_CODE) return { ok: false, message: 'That code is not right. In demo mode the code is shown above.' };
           const { error } = await supabase.auth.signInWithPassword(DEMO_ACCOUNT);
@@ -74,12 +97,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { ok: true };
       },
       async signOut() {
+        if (AUTH_MODE === 'local') {
+          writeLocal(false);
+          setLocalSignedIn(false);
+          return;
+        }
         // This device only: the demo account is shared, and signing out on one phone
         // should not end a user's sessions elsewhere.
         await supabase.auth.signOut({ scope: 'local' });
       },
     }),
-    [session, restoring],
+    [session, restoring, localSignedIn],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -89,6 +117,22 @@ export function useAuth(): AuthValue {
   const v = useContext(AuthContext);
   if (!v) throw new Error('useAuth must be used inside <AuthProvider>');
   return v;
+}
+
+function readLocal(): boolean {
+  try {
+    return globalThis.localStorage?.getItem(LOCAL_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+function writeLocal(on: boolean) {
+  try {
+    if (on) globalThis.localStorage?.setItem(LOCAL_KEY, '1');
+    else globalThis.localStorage?.removeItem(LOCAL_KEY);
+  } catch {
+    // Storage blocked (private window): sign-in lasts for this visit only.
+  }
 }
 
 /** PS-002: store the accepted terms/privacy version with language and timestamp. */

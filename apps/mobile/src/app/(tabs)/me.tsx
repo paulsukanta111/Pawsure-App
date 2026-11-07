@@ -15,14 +15,18 @@ export default function Me() {
 
   useEffect(() => {
     (async () => {
-      const uid = auth.session?.user.id;
+      const uid = auth.userId;
       if (!uid) return;
+      if (auth.mode === 'local') {
+        setProfile({ name: 'Neha', household: { name: "Neha's home", society: 'Hiranandani Gardens', tower: 'Tower B' } });
+        return;
+      }
       // Filter by our own auth id: RLS also returns people in our care circle.
       const { data: me } = await supabase.from('people').select('display_name').eq('auth_user_id', uid).maybeSingle();
       const { data: hh } = await supabase.from('households').select('name, society, tower').limit(1).maybeSingle();
       if (me) setProfile({ name: me.display_name, household: hh ?? undefined });
     })();
-  }, [auth.session?.user.id]);
+  }, [auth.userId, auth.mode]);
 
   return (
     <Screen header={<Logo size={32} tagline />}>
@@ -32,7 +36,7 @@ export default function Me() {
           {profile.household.name} · {[profile.household.society, profile.household.tower].filter(Boolean).join(', ')}
         </Text>
       ) : null}
-      {auth.mode === 'demo' ? (
+      {auth.mode !== 'otp' ? (
         <Card tone="brand">
           <Text variant="caption">Demo household. The day's events are simulated on this device; use "All screens" to explore every flow.</Text>
           <Button label="All screens" icon="leaf" onPress={() => router.push('/prototype')} />

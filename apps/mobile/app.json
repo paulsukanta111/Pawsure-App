@@ -22,7 +22,12 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "asyncRoutes": false
+        }
+      ],
       "expo-font"
     ],
     "scheme": "pawsure"

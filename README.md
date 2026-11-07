@@ -41,6 +41,18 @@ npm run mobile
 
 **Demo sign-in:** enter any 10-digit Indian mobile number, tick the terms, and use code `123456`. No SMS is sent; you land in the shared demo household on the dev Supabase project.
 
+## Shareable prototype
+
+Live: https://claude.ai/artifact/3zUBcJEdAyzaaXh5VZFLA7 (private until shared from its Share menu).
+
+Rebuild the single-file page (local sign-in, fonts embedded, nothing fetched from the network):
+
+```bash
+npm run build:prototype -w @pawsure/mobile
+```
+
+Output: `apps/mobile/dist-prototype/pawsure-prototype.html`.
+
 ## What the rules engine covers (`packages/domain`)
 
 | Module | PRD |

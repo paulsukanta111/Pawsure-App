@@ -45,7 +45,7 @@ export default function SignIn() {
     <Screen title={step === 'phone' ? 'Sign in' : 'Enter your code'} subtitle={step === 'phone' ? 'We use your mobile number. No password needed.' : `Sent to ${phone.replace(/^\+91/, '+91 ')}`}>
       <ProgressDots count={3} index={step === 'phone' ? 1 : 2} />
 
-      {auth.mode === 'demo' ? (
+      {auth.mode !== 'otp' ? (
         <Card tone="brand">
           <Text variant="bodyStrong">Demo mode</Text>
           <Text variant="caption">

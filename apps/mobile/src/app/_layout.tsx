@@ -4,12 +4,16 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router/js-stack';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
+import { Icon } from '../design/Icon';
 import { color, type } from '../design/theme';
 import { AuthProvider, useAuth } from '../lib/auth';
 import { PrototypeProvider } from '../proto/store';
 
+const INLINE_FONTS = process.env.EXPO_PUBLIC_INLINE_FONTS === '1';
+
 export default function RootLayout() {
-  const [loaded, error] = useFonts({ Baloo2_700Bold, Baloo2_800ExtraBold, Mukta_400Regular, Mukta_500Medium, Mukta_600SemiBold });
+  // The shareable prototype page embeds the fonts itself (EXPO_PUBLIC_INLINE_FONTS=1) and cannot fetch them.
+  const [loaded, error] = useFonts(INLINE_FONTS ? {} : { Baloo2_700Bold, Baloo2_800ExtraBold, Mukta_400Regular, Mukta_500Medium, Mukta_600SemiBold });
   // Fall back to system fonts rather than block the app if fonts fail to load.
   if (!loaded && !error) return <View style={{ flex: 1, backgroundColor: color.bg.canvas }} />;
   return (
@@ -23,9 +27,8 @@ export default function RootLayout() {
 }
 
 function Routes() {
-  const { session, restoring } = useAuth();
+  const { signedIn, restoring } = useAuth();
   if (restoring) return <View style={{ flex: 1, backgroundColor: color.bg.canvas }} />;
-  const signedIn = !!session;
   return (
     <Stack
       screenOptions={{
@@ -34,6 +37,10 @@ function Routes() {
         headerShadowVisible: false,
         headerTitleStyle: { fontFamily: type.subheading.fontFamily, fontSize: type.subheading.fontSize },
         cardStyle: { backgroundColor: color.bg.canvas },
+        // Our own icon instead of the library PNG: consistent style, and no image file to fetch.
+        headerBackImage: () => <Icon name="chevronLeft" tint={color.text.primary} />,
+        headerBackTitle: 'Back',
+        headerBackAccessibilityLabel: 'Back',
       }}
     >
       <Stack.Protected guard={signedIn} redirectTo="/welcome">
