@@ -1,0 +1,12 @@
+{
+  "name": "pawsure",
+  "private": true,
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "test": "npm run test -w @pawsure/domain -w @pawsure/design-tokens",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "mobile": "npm run start -w @pawsure/mobile",
+    "web": "npm run web -w @pawsure/mobile"
+  },
+  "engines": { "node": ">=20" }
+}
