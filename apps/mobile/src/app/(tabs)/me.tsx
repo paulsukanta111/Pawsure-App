@@ -1,15 +1,16 @@
-// Me: plan, wallet, care circle, privacy and rights (PS-002, PS-005, PS-119, PS-108).
+// Me: plan, wallet, care circle, privacy and rights (PS-002, PS-005, PS-108, PS-119).
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Button, Card, ListItem, Logo, Screen, SectionHeader, Text } from '../../design';
-import { helper } from '../../demo/data';
 import { useAuth } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
+import { useProto } from '../../proto/store';
 
-interface Profile { name: string; phone: string; household?: { name: string; society: string | null; tower: string | null } }
+interface Profile { name: string; household?: { name: string; society: string | null; tower: string | null } }
 
 export default function Me() {
   const auth = useAuth();
+  const { state, dispatch, pointsThisMonth } = useProto();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -17,9 +18,9 @@ export default function Me() {
       const uid = auth.session?.user.id;
       if (!uid) return;
       // Filter by our own auth id: RLS also returns people in our care circle.
-      const { data: me } = await supabase.from('people').select('display_name, phone_e164').eq('auth_user_id', uid).maybeSingle();
+      const { data: me } = await supabase.from('people').select('display_name').eq('auth_user_id', uid).maybeSingle();
       const { data: hh } = await supabase.from('households').select('name, society, tower').limit(1).maybeSingle();
-      if (me) setProfile({ name: me.display_name, phone: me.phone_e164, household: hh ?? undefined });
+      if (me) setProfile({ name: me.display_name, household: hh ?? undefined });
     })();
   }, [auth.session?.user.id]);
 
@@ -33,18 +34,25 @@ export default function Me() {
       ) : null}
       {auth.mode === 'demo' ? (
         <Card tone="brand">
-          <Text variant="caption">You're signed in to the shared demo household. Changes you make are visible to anyone using the demo.</Text>
+          <Text variant="caption">Demo household. The day's events are simulated on this device; use "All screens" to explore every flow.</Text>
+          <Button label="All screens" icon="leaf" onPress={() => router.push('/prototype')} />
         </Card>
       ) : null}
 
-      <SectionHeader title="Care circle" />
-      <ListItem icon="care" title={`${helper.name} · helper`} subtitle={`${helper.method} · ${helper.language}`} meta="Consent given · can pause any time" metaTone="success" onPress={() => {}} />
-      <ListItem icon="key" title="Food-box code card" subtitle="Print this month's card" onPress={() => {}} />
+      <SectionHeader title="Care" />
+      <ListItem icon="care" title="Care circle" subtitle={`${state.helper.name}, ${state.backup.name} (backup)`} onPress={() => router.push('/care-circle')} />
+      <ListItem icon="key" title="Food-box code card" subtitle="Print this month's card" onPress={() => router.push('/code-card')} />
+      <ListItem icon="paw" title="Wallet and health" subtitle={`${pointsThisMonth} points earned by ${state.helper.name} this month`} onPress={() => router.push('/wallet')} />
+      <ListItem icon="alert" title="Emergency and incidents" onPress={() => router.push('/emergency')} />
+
+      <SectionHeader title="Friends" />
+      <ListItem icon="shield" title="What friends see about me" subtitle="Society and tower only" onPress={() => router.push('/privacy-profile')} />
+      <ListItem icon="friends" title="My help settings" subtitle="When and how I can help others" onPress={() => router.push('/friend-settings')} />
 
       <SectionHeader title="Plan" />
       <Card>
         <Text variant="bodyStrong">Free</Text>
-        <Text variant="caption" tone="muted">Alerts, backup escalation, the emergency card and incident reporting are always free.</Text>
+        <Text variant="caption" tone="muted">Alerts, backup escalation, the emergency card and incident reporting are always free. Plus (₹149/month) is being tested.</Text>
       </Card>
 
       <SectionHeader title="Privacy and your data" />
@@ -52,6 +60,7 @@ export default function Me() {
       <ListItem icon="settings" title="Withdraw consent or delete" onPress={() => {}} />
       <ListItem icon="leaf" title="Style guide" subtitle="Design tokens and components" onPress={() => router.push('/styleguide')} />
 
+      <Button label="Reset demo day" kind="outlined" onPress={() => dispatch({ type: 'reset' })} full />
       <Button label="Sign out" kind="outlined" onPress={auth.signOut} full />
     </Screen>
   );

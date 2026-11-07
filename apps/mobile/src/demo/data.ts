@@ -11,7 +11,7 @@ export const household = { name: "Neha's home", society: 'Hiranandani Gardens', 
 
 export const pet = {
   name: 'Bruno',
-  species: 'dog' as const,
+  species: 'dog' as 'dog' | 'cat',
   speciesLabel: 'Dog',
   weightKg: 12.4,
   weightSeries: [11.8, 11.9, 12.0, 11.9, 12.1, 12.3, 12.4],

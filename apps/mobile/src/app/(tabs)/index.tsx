@@ -1,37 +1,32 @@
-// O5 Home / O6 Timeline / O13 Day report: "Who's caring today?" (PS-013 to PS-016, PS-007).
-import { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+// O5 Home / O6 Timeline / O13 Day report summary (PS-007, PS-013 to PS-016, PS-031).
+import { useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
-import { computePetDay, evaluateTask, planLadder, type TaskType } from '@pawsure/domain';
 import {
-  Button, Card, Checkbox, Chip, color, confidenceStyle, IconButton, ListItem, PetChip, Screen, SectionHeader, space,
-  StatusPill, Text, visitLabel, type IconName,
+  Button, Card, Checkbox, Chip, color, confidenceStyle, Icon, IconButton, ListItem, NoticeBanner, PetChip, radius, Screen,
+  SectionHeader, space, StatusPill, Text, visitLabel,
 } from '../../design';
-import { health, helper, owner, pet, tasks, todaysCode } from '../../demo/data';
-import { fmtTime } from '../../format';
+import { DemoClock } from '../../proto/DemoClock';
+import { TASK_ICON } from '../../proto/labels';
+import { fmt, useProto } from '../../proto/store';
 
-type Carer = 'helper' | 'trusted';
 const LEAVING_CHECKS = ['Water bowl full', 'Balcony and door secured', 'Expected return time set'];
-const TASK_ICON: Record<TaskType, IconName> = { feeding: 'food', water: 'water', walk: 'activity', toilet_pad: 'home', medicine: 'medication', other: 'paw' };
 
 function greeting(d: Date) {
-  const h = (d.getUTCHours() + 5.5) % 24; // IST
+  const h = (d.getUTCHours() + 5.5) % 24;
   return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
 }
 
 export default function Today() {
-  const [carer, setCarer] = useState<Carer>('helper');
+  const { now, state, dispatch, evaluations, activeTasks, alerts, day } = useProto();
   const [checked, setChecked] = useState<string[]>([]);
   const [left, setLeft] = useState(false);
-  const now = useMemo(() => new Date(), []);
-
-  const evaluated = useMemo(
-    () => tasks.map((t) => ({ task: t, result: evaluateTask({ dueAt: t.dueAt, now, signals: t.signals, expectedCode: todaysCode, visitTaskTypes: [t.type] }) })),
-    [now],
-  );
-  const day = computePetDay({ mode: 'tracked', date: now, tasks: evaluated.map(({ result }) => ({ cancelled: false, confidence: result.task })) });
-  const withEvidence = evaluated.filter(({ result }) => result.task === 'confirmed' || result.task === 'likely').length;
-  const next = evaluated.find(({ result }) => result.task === 'pending');
+  const { helper, pet } = state;
+  const trusted = helper.mode === 'trusted';
+  const openAlerts = alerts.filter((a) => !a.acknowledged);
+  const withEvidence = activeTasks.filter((t) => ['confirmed', 'likely'].includes(evaluations[t.id]!.task)).length;
+  const next = activeTasks.find((t) => evaluations[t.id]!.task === 'pending');
+  const carer = state.friendSearch?.state === 'confirmed' ? 'friend' : helper.unavailableToday ? 'none' : 'helper';
 
   return (
     <Screen
@@ -39,31 +34,60 @@ export default function Today() {
         <View style={st.header}>
           <View>
             <Text variant="caption" tone="muted">{greeting(now)},</Text>
-            <Text variant="h2">{owner.name}!</Text>
+            <Text variant="h2">Neha!</Text>
           </View>
-          <IconButton name="reminder" label="Notifications" onPress={() => {}} />
+          <View>
+            <IconButton name="reminder" label={`Alerts, ${openAlerts.length} new`} onPress={() => router.push('/notifications')} />
+            {openAlerts.length ? <View style={st.badge}><Text variant="small" tone="inverse">{openAlerts.length}</Text></View> : null}
+          </View>
         </View>
       }
     >
+      <DemoClock />
+
+      {openAlerts.slice(0, 2).map((a) => (
+        <Pressable key={a.id} accessibilityRole="button" onPress={() => router.push(a.taskId ? `/missed/${a.taskId}` : '/emergency')}>
+          <Card tone="alert">
+            <View style={st.row}>
+              <Icon name="alert" tint={color.text.alert} />
+              <Text variant="bodyStrong" style={{ flex: 1 }}>{a.title}</Text>
+              <Text variant="small" tone="muted">{fmt(a.at)}</Text>
+            </View>
+            <Text variant="caption">{a.body}</Text>
+            <View style={st.row}>
+              <Button label="I'm on it" onPress={() => (a.taskId ? dispatch({ type: 'ack', taskId: a.taskId }) : dispatch({ type: 'incident_ack', id: a.incidentId! }))} />
+              <Button label="Details" kind="outlined" onPress={() => router.push(a.taskId ? `/missed/${a.taskId}` : '/emergency')} />
+            </View>
+          </Card>
+        </Pressable>
+      ))}
+
       <View style={st.row}>
-        <PetChip name={pet.name} detail={`${pet.speciesLabel} · ${pet.age}`} species={pet.species} selected onPress={() => {}} />
-        <IconButton name="plus" label="Add a pet" onPress={() => {}} />
+        <PetChip name={pet.name} detail={`${pet.speciesLabel} · ${pet.age}`} species={pet.species} selected onPress={() => router.push('/pet')} />
+        <IconButton name="plus" label="Add a pet" onPress={() => router.push('/pet-edit')} />
       </View>
 
       <Card tone="brand">
         <Text variant="h3">Who's caring today?</Text>
         <View style={st.row}>
-          <Chip label={`${helper.name} (helper)`} selected={carer === 'helper'} onPress={() => setCarer('helper')} />
-          <Chip label="Trusted helper mode" selected={carer === 'trusted'} onPress={() => setCarer('trusted')} />
+          <Chip label={`${helper.name} (helper)`} selected={carer === 'helper' && !trusted} onPress={() => dispatch({ type: 'helper', patch: { mode: 'tracked', unavailableToday: false } })} />
+          <Chip label="Trusted helper mode" selected={trusted} onPress={() => dispatch({ type: 'helper', patch: { mode: 'trusted', unavailableToday: false } })} />
+          {carer === 'friend' ? <Chip label="Friend cover" selected /> : null}
         </View>
-        {carer === 'trusted' ? (
-          <Text variant="caption">No check-ins, alerts or points for {helper.name} today. Tap "Covered" tonight to count the day.</Text>
+        {helper.unavailableToday && carer !== 'friend' ? (
+          <NoticeBanner icon="care" title={`${helper.name} can't come today`} body="Your original plan is kept for the record. Find cover so the tasks are still done." tone="alert" />
+        ) : trusted ? (
+          <Text variant="caption">No check-ins, alerts or points for {helper.name}. Tap "Covered" tonight to count the day.</Text>
         ) : (
           <Text variant="caption">
-            {withEvidence} of {tasks.length} tasks have evidence.{next ? ` Next: ${next.task.title} at ${fmtTime(next.task.dueAt)}.` : ''}
+            {withEvidence} of {activeTasks.length} tasks have evidence.{next ? ` Next: ${next.title} at ${fmt(next.dueAt)}.` : ''}
           </Text>
         )}
-        <Button label={`${helper.name} can't come today`} kind="secondary" icon="care" onPress={() => router.push('/find-cover')} />
+        {helper.unavailableToday ? (
+          <Button label="Find cover" icon="care" onPress={() => router.push('/find-cover')} />
+        ) : (
+          <Button label={`${helper.name} can't come today`} kind="secondary" icon="care" onPress={() => { dispatch({ type: 'helper', patch: { unavailableToday: true } }); router.push('/find-cover'); }} />
+        )}
       </Card>
 
       {!left ? (
@@ -72,6 +96,7 @@ export default function Today() {
           {LEAVING_CHECKS.map((c) => (
             <Checkbox key={c} label={c} checked={checked.includes(c)} onChange={(v) => setChecked((p) => (v ? [...p, c] : p.filter((x) => x !== c)))} />
           ))}
+          <Text variant="small" tone="muted">This is a reminder list, not a safety guarantee.</Text>
           <View style={st.row}>
             <Button label="I'm leaving" onPress={() => setLeft(true)} />
             <Button label="Skip" kind="outlined" onPress={() => setLeft(true)} />
@@ -79,50 +104,62 @@ export default function Today() {
         </Card>
       ) : null}
 
-      <SectionHeader title="Today's care" />
-      {evaluated.map(({ task, result }) => {
-        const ladder = planLadder(task.id, task.type, task.dueAt);
-        const visit = visitLabel[result.visit];
-        const meta =
-          result.task === 'pending'
-            ? `If nothing arrives, you're alerted at ${fmtTime(ladder[0]!.at)}`
-            : [confidenceStyle[result.task].explain, visit, result.late ? 'Late' : ''].filter(Boolean).join(' · ');
+      <SectionHeader title="Today's care" action="Routine" onAction={() => router.push('/routine')} />
+      {state.tasks.map((t) => {
+        const ev = evaluations[t.id]!;
+        const visit = visitLabel[ev.visit];
+        const meta = t.cancelled
+          ? `Cancelled: ${t.cancelReason}`
+          : trusted
+            ? 'Trusted helper mode: no check-in expected'
+            : ev.task === 'pending'
+              ? `Due ${fmt(t.dueAt)}. If nothing arrives you're alerted at ${fmt(new Date(t.dueAt.getTime() + (t.type === 'medicine' ? 15 : t.type === 'walk' ? 45 : 30) * 60_000))}.`
+              : [confidenceStyle[ev.task].explain, visit, ev.late ? 'Late' : ''].filter(Boolean).join(' · ');
         return (
           <ListItem
-            key={task.id}
-            icon={TASK_ICON[task.type]}
-            title={task.title}
-            subtitle={`${fmtTime(task.dueAt)} · ${helper.name}`}
+            key={t.id}
+            icon={TASK_ICON[t.type]}
+            title={t.title}
+            subtitle={`${fmt(t.dueAt)} · ${carer === 'friend' ? 'Friend cover' : helper.name}`}
             meta={meta}
-            metaTone={result.task === 'missed' || result.task === 'not_confirmed' ? 'alert' : 'muted'}
-            right={<StatusPill value={result.task} />}
+            metaTone={!trusted && !t.cancelled && (ev.task === 'missed' || ev.task === 'not_confirmed') ? 'alert' : 'muted'}
+            right={trusted || t.cancelled ? undefined : <StatusPill value={ev.task} />}
+            onPress={() => router.push(`/task/${t.id}`)}
           />
         );
       })}
 
-      <SectionHeader title="Upcoming health" action="See all" onAction={() => router.push('/pet')} />
-      {health.slice(0, 2).map((h) => (
-        <ListItem
-          key={h.id}
-          icon={h.icon}
-          title={h.title}
-          subtitle={h.subtitle}
-          meta={h.dueInDays === 0 ? 'Today' : `Due in ${h.dueInDays} days`}
-          metaTone={h.dueInDays <= 7 ? 'alert' : 'muted'}
-          onPress={() => router.push('/pet')}
-        />
-      ))}
+      <SectionHeader title="Upcoming health" action="See all" onAction={() => router.push('/wallet')} />
+      {state.health.filter((h) => !h.done).slice(0, 2).map((h) => {
+        const days = Math.round((h.dueOn.getTime() - now.getTime()) / 86_400_000);
+        return (
+          <ListItem key={h.id} icon={h.kind === 'vaccine' ? 'vaccine' : h.kind === 'deworming' ? 'medication' : 'calendar'} title={h.title} subtitle={h.detail}
+            meta={days <= 0 ? 'Today' : `Due in ${days} days`} metaTone={days <= 7 ? 'alert' : 'muted'} onPress={() => router.push('/wallet')} />
+        );
+      })}
 
       <Card tone={day.outcome === 'covered' ? 'calm' : 'plain'}>
-        <Text variant="subheading">{day.outcome === 'covered' ? 'Covered care day' : 'Not covered yet'}</Text>
-        <Text variant="caption" tone="muted">
-          A day counts when every task is Confirmed, Likely or checked by you on return, or a missed task was handled through alerts.
+        <Text variant="subheading">
+          {day.outcome === 'covered' ? 'Covered care day' : day.outcome === 'unknown' ? 'Not marked yet' : 'Not covered yet'}
         </Text>
-        <Button label="10-second return check" kind="outlined" onPress={() => router.push('/return-check')} />
+        {trusted ? (
+          <>
+            <Text variant="caption" tone="muted">In Trusted helper mode a day counts only when you mark it covered.</Text>
+            <View style={st.row}>
+              <Button label="Covered" onPress={() => dispatch({ type: 'patch', patch: { trustedCovered: true } })} />
+              <Button label="Not covered" kind="outlined" onPress={() => dispatch({ type: 'patch', patch: { trustedCovered: false } })} />
+            </View>
+          </>
+        ) : (
+          <>
+            <Text variant="caption" tone="muted">A day counts when every task is Confirmed, Likely or checked by you on return, or a missed task was handled through alerts.</Text>
+            <View style={st.row}>
+              <Button label="Return check" kind="secondary" onPress={() => router.push('/return-check')} />
+              <Button label="Day report" kind="outlined" onPress={() => router.push('/day-report')} />
+            </View>
+          </>
+        )}
       </Card>
-      <Text variant="small" tone="muted" align="center" style={{ color: color.text.muted, marginTop: space.sm }}>
-        Rule {day.ruleVersion} · confidence rules {evaluated[0]?.result.ruleVersion}
-      </Text>
     </Screen>
   );
 }
@@ -130,4 +167,5 @@ export default function Today() {
 const st = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' },
+  badge: { position: 'absolute', top: 4, right: 4, minWidth: 20, height: 20, borderRadius: radius.pill, backgroundColor: color.status.alert, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
 });

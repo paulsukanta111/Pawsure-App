@@ -6,7 +6,14 @@
 - **Schema** (`supabase/migrations/20261107000001_p0_core_schema.sql`): section 12.2 entities, RLS on every table, append-only audit and task history, `create_household()` RPC, pilot feature switches with PRD defaults. **Applied to the dev Supabase project** (`kwuswszyhyulnlfsqzce`, Tokyo) with the advisor fixes in `20261107000002_advisor_fixes.sql`. Verified live: one owner cannot read or write another household; anonymous users read nothing and cannot call `create_household`; RLS helper functions are not exposed over the API.
 - **Design system**: tokens package with contrast tests, component library, in-app style guide (`docs/design-system.md`).
 - **Demo sign-in**: welcome → mobile number + language + terms consent → code (shown on screen, `123456`) → signed in to a real Supabase demo account (`supabase/seed/demo_account.sql`). Session persists across reloads; sign-out is per device; consent is recorded (PS-002). Set `EXPO_PUBLIC_AUTH_MODE=otp` for real SMS OTP once a provider is configured. Signed-out users can't reach app screens.
-- **App screens** (sample data except Me, which reads the household from Supabase): Today (who's caring, leaving check, timeline with confidence labels, health, day report), Find cover (PS-125 form → ranked friends → approval → live request state), Friends, Pet (health metric, reminders, routine, emergency card), Me, return check. Builds for web and Android (Hermes bundle).
+- **Full clickable prototype** of every wireframe in PRD Appendix A, on one simulated household (`apps/mobile/src/proto/store.tsx`) driven by the real domain rules. Open **Me → All screens** (`/prototype`) for the screen map and four guided demos.
+  - Owner P0: O1–O7, O12–O15, code card, alerts, backup look-in link (opens without an account).
+  - Helper (no app): W1–W5 as a simulated WhatsApp chat in English/Hindi/Marathi, W4 as a keypad-phone IVR simulator. Translations are drafts for native-speaker review.
+  - Friend Finder: F1–F7, including the friend's side of a request (F6).
+  - Later releases, labelled previews with sample data: day cares O8–O11 and P1–P4, verified carers P5–P6.
+  - A demo clock (3:45, 4:45, 5:15, 5:30, 7:30 pm) makes missed check-ins, the escalation ladder and expiry timers happen on cue.
+  - Verified: all 36 routes render without errors; the four guided demos pass end to end in a browser; Android bundle builds.
+- **Earlier screen notes** (sample data except Me, which reads the household from Supabase): Today (who's caring, leaving check, timeline with confidence labels, health, day report), Find cover (PS-125 form → ranked friends → approval → live request state), Friends, Pet (health metric, reminders, routine, emergency card), Me, return check. Builds for web and Android (Hermes bundle).
 
 ## Next
 
