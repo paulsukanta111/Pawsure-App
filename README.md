@@ -39,6 +39,8 @@ npm run mobile
 
 `npm run mobile` starts Expo; scan the QR code with Expo Go on Android.
 
+**Demo sign-in:** enter any 10-digit Indian mobile number, tick the terms, and use code `123456`. No SMS is sent; you land in the shared demo household on the dev Supabase project.
+
 ## What the rules engine covers (`packages/domain`)
 
 | Module | PRD |
