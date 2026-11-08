@@ -15,6 +15,8 @@ export const palette = {
   goldenYellow: '#FFC400',
   cream: '#FFFDF0',
   softBeige: '#F4EED8',
+  /** Warm paper behind the welcome illustration (matches the supplied artwork). */
+  paper: '#FEF8F1',
   charcoal: '#20201D',
   // Supporting hues (not on the moodboard; needed for alerts and progress).
   charcoalMuted: '#5A574C',
@@ -29,6 +31,7 @@ export const palette = {
 export const color = {
   bg: {
     canvas: palette.softBeige,     // screen background
+    paper: palette.paper,          // welcome screen, behind the illustration
     card: palette.cream,           // cards & panels
     raised: palette.white,         // inputs, list rows inside cards
     brand: palette.stone,          // illustration backdrops, onboarding

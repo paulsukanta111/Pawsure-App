@@ -8,9 +8,9 @@ import { Icon, type IconName } from './Icon';
 import { Text } from './Text';
 import { color, confidenceStyle, radius, space, touchTarget } from './theme';
 
-export function Screen({ title, subtitle, header, children }: { title?: string; subtitle?: string; header?: ReactNode; children: ReactNode }) {
+export function Screen({ title, subtitle, header, children, background }: { title?: string; subtitle?: string; header?: ReactNode; children: ReactNode; background?: string }) {
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
+    <SafeAreaView style={[s.safe, background ? { backgroundColor: background } : null]} edges={['top']}>
       <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
         <View style={s.inner}>
           {header}

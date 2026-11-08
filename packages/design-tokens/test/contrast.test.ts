@@ -6,6 +6,8 @@ const TEXT: [string, string, string][] = [
   ['primary text on canvas', color.text.primary, color.bg.canvas],
   ['primary text on card', color.text.primary, color.bg.card],
   ['primary text on stone', color.text.primary, color.bg.brand],
+  ['primary text on paper', color.text.primary, color.bg.paper],
+  ['muted text on paper', color.text.muted, color.bg.paper],
   ['muted text on card', color.text.muted, color.bg.card],
   ['muted text on canvas', color.text.muted, color.bg.canvas],
   ['muted text on raised', color.text.muted, color.bg.raised],
@@ -24,6 +26,7 @@ const UI: [string, string, string][] = [
   ['control border on card', color.border.control, color.bg.card],
   ['control border on canvas', color.border.control, color.bg.canvas],
   ['control border on raised', color.border.control, color.bg.raised],
+  ['strong border on paper', color.border.strong, color.bg.paper],
   ['strong border on yellow', color.border.strong, color.action.primary],
   ['alert boundary on card', color.status.alert, color.bg.card],
 ];

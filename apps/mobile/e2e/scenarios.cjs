@@ -25,7 +25,7 @@ const fs = require('fs');
 
   await p.goto(PAGE);
   await step('1 onboarding: welcome, OTP, 6 steps', async () => {
-    await btn('Next').click(); await btn('Next').click(); await btn('Get started').click();
+    await see("When help can't come, ask friends."); await p.screenshot({ path: `${out}/welcome-v2.png` }); await btn('Get started').click();
     await p.getByLabel('Mobile number').fill('9876543210');
     await p.getByRole('checkbox').click();
     await btn('Get code').click();
