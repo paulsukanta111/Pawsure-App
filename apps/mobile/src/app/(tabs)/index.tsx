@@ -108,9 +108,9 @@ export default function Today() {
           </Text>
         )}
         {helper.unavailableToday ? (
-          <Button label="Find cover" icon="care" full onPress={() => router.push('/find-cover')} />
+          <Button label="Find cover" full onPress={() => router.push('/find-cover')} />
         ) : (
-          <Button label={`${helper.name} can't come today`} kind="secondary" icon="care" full onPress={() => { dispatch({ type: 'helper', patch: { unavailableToday: true } }); router.push('/find-cover'); }} />
+          <Button label={`${helper.name} can't come today`} kind="secondary" full onPress={() => { dispatch({ type: 'helper', patch: { unavailableToday: true } }); router.push('/find-cover'); }} />
         )}
       </Card>
 
