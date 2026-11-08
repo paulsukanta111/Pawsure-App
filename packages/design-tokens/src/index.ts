@@ -14,6 +14,10 @@ export const palette = {
   stone: '#C3BEA8',
   goldenYellow: '#FFC400',
   cream: '#FFFDF0',
+  /** Warm cream screen background from the app screen mockups (v2.1). */
+  creamCanvas: '#FFF8E6',
+  /** Near-white card surface on the cream canvas. */
+  creamCard: '#FFFDF7',
   softBeige: '#F4EED8',
   /** Warm paper behind the welcome illustration (matches the supplied artwork). */
   paper: '#FEF8F1',
@@ -30,9 +34,10 @@ export const palette = {
 
 export const color = {
   bg: {
-    canvas: palette.softBeige,     // screen background
+    canvas: palette.creamCanvas,   // screen background
     paper: palette.paper,          // welcome screen, behind the illustration
-    card: palette.cream,           // cards & panels
+    card: palette.creamCard,       // cards & panels
+    sunken: palette.softBeige,     // segmented-control tracks, inactive tiles
     raised: palette.white,         // inputs, list rows inside cards
     brand: palette.stone,          // illustration backdrops, onboarding
     inverse: palette.charcoal,
@@ -45,6 +50,8 @@ export const color = {
     onAction: palette.charcoal,    // text on Golden Yellow buttons
     alert: palette.alert,
     success: palette.success,
+    /** "See all" links: a dark amber that reads as the brand yellow but passes 4.5:1. */
+    link: '#8A5A00',
   },
   action: {
     primary: palette.goldenYellow,

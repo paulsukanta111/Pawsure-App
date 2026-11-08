@@ -1,9 +1,8 @@
-// O1 Welcome, built from the team's welcome-screen design: illustration, headline with
-// a yellow underline, short body, "Get started", and dots for the other two intro slides.
+// O1 Welcome, laid out like the app mockups: headline, short line, illustration, dots,
+// "Next" through the three intro slides, "Get started", and "Log in" for returning users.
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
 import { Button, Character, color, radius, Screen, space, Text, type CharacterName } from '../design';
 import { WELCOME_HERO } from '../design/welcomeHero';
 
@@ -24,19 +23,16 @@ export default function Welcome() {
   return (
     <Screen background={color.bg.paper}>
       <View style={st.wrap}>
+        {/* Mockup order: headline, short line, illustration, dots, then the yellow button. */}
+        <View style={st.copy}>
+          <Text variant="h2" align="center" style={st.title}>{slide.title}</Text>
+          <Text variant="body" tone="muted" align="center" style={st.body}>{slide.body}</Text>
+        </View>
         {slide.art === 'hero' ? (
           <Image source={WELCOME_HERO} resizeMode="contain" accessibilityLabel="A dog and a cat in Pawsure hoodies; the dog checks a phone while a friend gives a thumbs up" style={{ width: heroW, height: heroH }} />
         ) : (
           <View style={{ height: heroH, justifyContent: 'center' }}><Character name={slide.art} height={Math.min(heroH, 250)} label={slide.title} /></View>
         )}
-        <View style={st.copy}>
-          <Text variant="h2" align="center" style={st.title}>{slide.title}</Text>
-          <Svg width={220} height={12} viewBox="0 0 220 12" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <Path d="M4 8 C 60 2, 150 2, 216 6" stroke={color.action.primary} strokeWidth={5} strokeLinecap="round" fill="none" />
-          </Svg>
-          <Text variant="subheading" tone="muted" align="center" style={st.body}>{slide.body}</Text>
-        </View>
-        <Button label="Get started" onPress={() => router.push('/sign-in')} full />
         <View style={st.dots} accessibilityRole="tablist">
           {SLIDES.map((sl, n) => (
             <Pressable key={sl.title} accessibilityRole="tab" accessibilityState={{ selected: n === i }} accessibilityLabel={`Slide ${n + 1} of ${SLIDES.length}: ${sl.title}`}
@@ -45,6 +41,13 @@ export default function Welcome() {
             </Pressable>
           ))}
         </View>
+        {i < SLIDES.length - 1 ? (
+          <Button label="Next" onPress={() => setI(i + 1)} full />
+        ) : null}
+        <Button label="Get started" kind={i < SLIDES.length - 1 ? 'outlined' : 'primary'} onPress={() => router.push('/sign-in')} full />
+        <Pressable accessibilityRole="link" onPress={() => router.push('/sign-in')} hitSlop={8} style={st.login}>
+          <Text variant="caption" tone="muted">Already have an account? <Text variant="label">Log in</Text></Text>
+        </Pressable>
         <Text variant="small" tone="muted" align="center">Pawsure is a coordination and evidence tool. It is not a vet or an emergency service.</Text>
       </View>
     </Screen>
@@ -53,7 +56,8 @@ export default function Welcome() {
 
 const st = StyleSheet.create({
   wrap: { alignItems: 'center', gap: space.lg, paddingTop: space.lg, width: '100%', maxWidth: 480, alignSelf: 'center' },
-  copy: { alignItems: 'center', gap: space.sm, minHeight: 190 },
+  copy: { alignItems: 'center', gap: space.sm, minHeight: 150, justifyContent: 'center' },
+  login: { minHeight: 32, justifyContent: 'center' },
   title: { maxWidth: 340 },
   body: { maxWidth: 360 },
   dots: { flexDirection: 'row', gap: space.sm, alignItems: 'center' },

@@ -1,4 +1,5 @@
 // Health calendar, history, medication reminders, vet details (PS-040, PS-041, PS-046). Reminds; never prescribes.
+import { Stack } from 'expo-router/js-stack';
 import { Linking } from 'react-native';
 import { Button, Card, KeyValue, ListItem, NoticeBanner, Screen, SectionHeader, Text, useToast } from '../design';
 import { useProto } from '../proto/store';
@@ -14,7 +15,10 @@ export default function Health() {
   const { state, dispatch, now } = useProto();
   const toast = useToast();
   return (
-    <Screen title={`${state.pet.name}'s health`} subtitle="Dates you entered or copied from your vet.">
+    <Screen>
+      {/* Mockup header: "Mochi's health" centred in the bar, not repeated in the page. */}
+      <Stack.Screen options={{ title: `${state.pet.name}'s health` }} />
+      <Text variant="caption" tone="muted">Dates you entered or copied from your vet.</Text>
       <NoticeBanner icon="shield" title="Reminders only" body="Pawsure does not diagnose, prescribe or change a dose. Ask your vet." />
       <SectionHeader title="Due" />
       {state.health.map((h) => {

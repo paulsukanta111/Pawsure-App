@@ -37,10 +37,10 @@ const tones: Record<string, ViewStyle> = {
 export function SectionHeader({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) {
   return (
     <View style={s.sectionHeader}>
-      <Text variant="subheading">{title}</Text>
+      <Text variant="subheading" style={{ fontFamily: 'Mukta_600SemiBold' }}>{title}</Text>
       {action && onAction ? (
         <Pressable accessibilityRole="link" onPress={onAction} hitSlop={12}>
-          <Text variant="label" style={{ textDecorationLine: 'underline' }}>{action}</Text>
+          <Text variant="label" style={{ color: color.text.link }}>{action}</Text>
         </Pressable>
       ) : null}
     </View>
@@ -50,7 +50,7 @@ export function SectionHeader({ title, action, onAction }: { title: string; acti
 /** Rounded icon tile used at the start of list rows and in category grids. */
 export function IconTile({ name, size = 44, tone = 'beige' }: { name: IconName; size?: number; tone?: 'beige' | 'yellow' }) {
   return (
-    <View style={[s.tile, { width: size, height: size }, tone === 'yellow' && { backgroundColor: color.action.primary, borderColor: color.border.strong }]}>
+    <View style={[s.tile, { width: size, height: size }, tone === 'yellow' && { backgroundColor: color.bg.selected, borderColor: color.border.strong }]}>
       <Icon name={name} size={Math.round(size * 0.5)} />
     </View>
   );
@@ -58,13 +58,16 @@ export function IconTile({ name, size = 44, tone = 'beige' }: { name: IconName; 
 
 /** Card / list item (moodboard "Vaccination Due"). */
 export function ListItem({
-  icon, title, subtitle, meta, metaTone = 'muted', right, onPress,
+  icon, title, subtitle, meta, metaTone = 'muted', right, onPress, accent,
 }: {
   icon?: IconName; title: string; subtitle?: string; meta?: string; metaTone?: 'muted' | 'alert' | 'success'; right?: ReactNode; onPress?: () => void;
+  /** Yellow bar on the leading edge: the item that needs attention first. */
+  accent?: boolean;
 }) {
   const body = (
     <>
-      {icon ? <IconTile name={icon} /> : null}
+      {accent ? <View style={s.accentBar} /> : null}
+      {icon ? <View style={s.listIcon}><Icon name={icon} size={28} /></View> : null}
       <View style={{ flex: 1, gap: 2 }}>
         <Text variant="bodyStrong">{title}</Text>
         {subtitle ? <Text variant="caption" tone="muted">{subtitle}</Text> : null}
@@ -82,6 +85,38 @@ export function ListItem({
   );
 }
 
+/** Daily metric row (mockup "Food intake 240 kcal · Good"): yellow edge, icon, value, status word. */
+export function MetricRow({ icon, title, value, status, statusTone = 'success', onPress }: {
+  icon: IconName; title: string; value: string; status?: string; statusTone?: 'success' | 'alert' | 'muted'; onPress?: () => void;
+}) {
+  const body = (
+    <>
+      <View style={s.accentBar} />
+      <View style={s.listIcon}><Icon name={icon} size={28} /></View>
+      <View style={{ flex: 1 }}>
+        <Text variant="bodyStrong">{title}</Text>
+        <Text variant="caption" tone="muted">{value}</Text>
+      </View>
+      {status ? <Text variant="bodyStrong" tone={statusTone}>{status}</Text> : null}
+    </>
+  );
+  if (!onPress) return <View style={s.listItem} accessible accessibilityLabel={`${title}, ${value}${status ? `, ${status}` : ''}`}>{body}</View>;
+  return <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [s.listItem, pressed && { backgroundColor: color.bg.canvas }]}>{body}</Pressable>;
+}
+
+/** Round quick action under the pet profile (mockup "Health / Nutrition / Activity / Records"). */
+export function QuickAction({ icon, label, selected, onPress }: { icon: IconName; label: string; selected?: boolean; onPress: () => void }) {
+  return (
+    <Pressable accessibilityRole="button" accessibilityState={{ selected: !!selected }} accessibilityLabel={label} onPress={onPress} style={s.quick}>
+      {({ pressed }) => (
+        <>
+          <View style={[s.quickCircle, selected && s.quickCircleOn, pressed && { opacity: 0.8 }]}><Icon name={icon} size={28} /></View>
+          <Text variant="small">{label}</Text>
+        </>
+      )}
+    </Pressable>
+  );
+}
 /** Health metric card with sparkline (moodboard "Weight 12.4 kg +0.3 kg"). */
 export function MetricCard({ icon, label, value, delta, series, style }: { icon: IconName; label: string; value: string; delta?: string; series: number[]; style?: ViewStyle }) {
   return (
@@ -139,7 +174,7 @@ export function PetAvatar({ species, size = 48 }: { species: 'dog' | 'cat'; size
 export function PetChip({ name, detail, species, selected, onPress }: { name: string; detail: string; species: 'dog' | 'cat'; selected?: boolean; onPress: () => void }) {
   return (
     <Pressable accessibilityRole="button" accessibilityState={{ selected: !!selected }} onPress={onPress} style={[s.petChip, selected && s.petChipOn]}>
-      <PetAvatar species={species} size={36} />
+      <View style={[s.petAvatar, selected && { backgroundColor: color.action.primary }]}><PetAvatar species={species} size={40} /></View>
       <View>
         <Text variant="label">{name}</Text>
         <Text variant="small" tone="muted">{detail}</Text>
@@ -177,13 +212,19 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: color.bg.canvas },
   scroll: { paddingBottom: space.xxl },
   inner: { width: '100%', maxWidth: 640, alignSelf: 'center', paddingHorizontal: space.lg, paddingTop: space.lg, gap: space.lg },
-  card: { backgroundColor: color.bg.card, borderRadius: radius.xl, padding: space.lg, gap: space.md, borderWidth: 1, borderColor: color.border.subtle },
+  card: { backgroundColor: color.bg.card, borderRadius: radius.lg, padding: space.lg, gap: space.md, borderWidth: 1, borderColor: color.border.subtle },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: space.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   tile: { borderRadius: radius.md, backgroundColor: color.bg.canvas, borderWidth: 1, borderColor: color.border.subtle, alignItems: 'center', justifyContent: 'center' },
-  listItem: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: touchTarget + 16, paddingVertical: space.sm, paddingHorizontal: space.md, backgroundColor: color.bg.raised, borderRadius: radius.lg, borderWidth: 1, borderColor: color.border.subtle },
+  listItem: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: touchTarget + 20, paddingVertical: space.md, paddingHorizontal: space.lg, backgroundColor: color.bg.card, borderRadius: radius.lg, borderWidth: 1, borderColor: color.border.subtle, overflow: 'hidden' },
+  listIcon: { width: 32, alignItems: 'center' },
+  accentBar: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 5, backgroundColor: color.action.primary },
+  quick: { alignItems: 'center', gap: space.xs, minWidth: 64 },
+  quickCircle: { width: 56, height: 56, borderRadius: radius.pill, borderWidth: 1.5, borderColor: color.border.subtle, backgroundColor: color.bg.card, alignItems: 'center', justifyContent: 'center' },
+  quickCircleOn: { backgroundColor: color.bg.selected, borderColor: color.action.primary, borderWidth: 2 },
+  petAvatar: { width: 44, height: 44, borderRadius: radius.pill, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: color.bg.sunken },
   pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderRadius: radius.pill, paddingHorizontal: space.md, paddingVertical: 2 },
-  petChip: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.xs, paddingLeft: space.xs, paddingRight: space.lg, borderRadius: radius.pill, borderWidth: 1.5, borderColor: color.border.subtle, backgroundColor: color.bg.raised, minHeight: touchTarget },
-  petChipOn: { borderColor: color.border.strong, backgroundColor: color.bg.selected },
+  petChip: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm, paddingLeft: space.sm, paddingRight: space.lg, borderRadius: radius.lg, borderWidth: 2, borderColor: 'transparent', minHeight: touchTarget },
+  petChipOn: { borderColor: color.action.primary, backgroundColor: color.bg.selected },
   illustration: { borderRadius: radius.xl, backgroundColor: color.bg.brand, alignItems: 'center', justifyContent: 'center', gap: space.xs, borderWidth: 1, borderColor: color.border.subtle },
 });

@@ -119,7 +119,7 @@ export function SegmentedTabs<T extends string>({ options, value, onChange }: { 
         const on = o.value === value;
         return (
           <Pressable key={o.value} accessibilityRole="tab" accessibilityState={{ selected: on }} onPress={() => onChange(o.value)} style={[s.segment, on && s.segmentOn]}>
-            <Text variant="label">{o.label}</Text>
+            <Text variant="label" tone={on ? undefined : 'muted'}>{o.label}</Text>
           </Pressable>
         );
       })}
@@ -180,15 +180,16 @@ const s = StyleSheet.create({
   trackOn: { backgroundColor: color.action.primary, borderColor: color.border.strong },
   knob: { width: 22, height: 22, borderRadius: radius.pill, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: color.border.control },
   knobOn: { alignSelf: 'flex-end', borderColor: color.border.strong },
-  segments: { flexDirection: 'row', gap: space.xs, backgroundColor: color.bg.raised, borderRadius: radius.pill, padding: space.xs, borderWidth: 1, borderColor: color.border.subtle, alignSelf: 'flex-start', flexWrap: 'wrap' },
-  segment: { minHeight: 40, paddingHorizontal: space.lg, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
+  // Mockup "Week / Month / Year": full-width beige track, yellow rounded block for the selected option.
+  segments: { flexDirection: 'row', gap: space.xs, backgroundColor: color.bg.sunken, borderRadius: radius.md, padding: space.xs, alignSelf: 'stretch' },
+  segment: { flex: 1, minHeight: 44, paddingHorizontal: space.md, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' },
   segmentOn: { backgroundColor: color.action.primary },
   chip: {
     flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 40, paddingHorizontal: space.md,
     borderRadius: radius.pill, borderWidth: 1.5, borderColor: color.border.control, backgroundColor: color.bg.raised,
   },
   chipOn: { backgroundColor: color.bg.selected, borderColor: color.border.strong },
-  tag: { minHeight: 32, borderWidth: 1, borderColor: color.border.subtle, backgroundColor: color.bg.canvas },
+  tag: { minHeight: 32, borderWidth: 1, borderColor: color.border.control, backgroundColor: 'transparent' },
   dots: { flexDirection: 'row', gap: space.sm, alignItems: 'center' },
   dot: { width: 8, height: 8, borderRadius: radius.pill, backgroundColor: color.border.control },
   dotOn: { width: 24, backgroundColor: color.action.primary, borderWidth: 1.5, borderColor: color.border.strong, height: 10 },

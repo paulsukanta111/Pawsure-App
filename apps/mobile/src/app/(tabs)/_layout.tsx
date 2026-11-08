@@ -1,6 +1,9 @@
 // Navigation frozen in PS-108: Today · Find cover · Friends · Pet · Me.
+// Styled after the app mockups: cream bar, bold label on the selected tab, and the primary
+// action (Find cover) as a raised yellow circle, like the mockup's centre "+" button.
 import { Tabs } from 'expo-router/js-tabs';
-import { color, Icon, type, type IconName } from '../../design';
+import { View } from 'react-native';
+import { color, Icon, radius, Text, type IconName } from '../../design';
 
 const TAB_ICON: Record<string, IconName> = { index: 'home', 'find-cover': 'findCover', friends: 'friends', pet: 'paw', me: 'profile' };
 
@@ -11,14 +14,23 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: color.text.primary,
         tabBarInactiveTintColor: color.text.muted,
-        tabBarLabelStyle: { fontFamily: type.label.fontFamily, fontSize: 12 },
-        // Labels under icons at every width, so the active pill never overlaps the label on tablets.
         tabBarLabelPosition: 'below-icon',
-        tabBarStyle: { height: 68, paddingTop: 6, paddingBottom: 8, backgroundColor: color.bg.card, borderTopColor: color.border.subtle },
-        // Selected tab = filled Pawsure icon; others are plain outlines.
-        tabBarIcon: ({ focused }) => (
-          <Icon name={TAB_ICON[route.name] ?? 'paw'} size={26} tint={focused ? color.text.primary : color.text.muted} filled={focused} accent={focused} />
+        tabBarLabel: ({ focused, children }) => (
+          <Text variant="small" style={{ fontFamily: focused ? 'Mukta_600SemiBold' : 'Mukta_400Regular', color: focused ? color.text.primary : color.text.muted }}>{children}</Text>
         ),
+        tabBarStyle: { height: 72, paddingTop: 6, paddingBottom: 8, backgroundColor: color.bg.card, borderTopColor: color.border.subtle, overflow: 'visible' },
+        tabBarIcon: ({ focused }) =>
+          route.name === 'find-cover' ? (
+            <View style={{
+              width: 52, height: 52, marginTop: -22, borderRadius: radius.pill, backgroundColor: color.action.primary,
+              borderWidth: 1.5, borderColor: color.border.strong, alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Icon name="findCover" size={28} filled={focused} />
+            </View>
+          ) : (
+            // Selected tab = filled Pawsure icon; others are plain outlines.
+            <Icon name={TAB_ICON[route.name] ?? 'paw'} size={26} tint={focused ? color.text.primary : color.text.muted} filled={focused} accent={focused} />
+          ),
       })}
     >
       <Tabs.Screen name="index" options={{ title: 'Today' }} />

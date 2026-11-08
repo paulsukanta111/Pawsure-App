@@ -5,7 +5,7 @@ import { Stack } from 'expo-router/js-stack';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { Icon } from '../design/Icon';
-import { color, type } from '../design/theme';
+import { color } from '../design/theme';
 import { AuthProvider, useAuth } from '../lib/auth';
 import { PrototypeProvider, useProto } from '../proto/store';
 import { ToastProvider } from '../design/states';
@@ -40,8 +40,13 @@ function Routes() {
         headerTintColor: color.text.primary,
         headerStyle: { backgroundColor: color.bg.canvas },
         headerShadowVisible: false,
-        headerTitleStyle: { fontFamily: type.subheading.fontFamily, fontSize: type.subheading.fontSize },
-        cardStyle: { backgroundColor: color.bg.canvas },
+        // Mockup header: centred bold title between the back chevron and actions.
+        headerTitleAlign: 'center',
+        headerTitleStyle: { fontFamily: 'Baloo2_700Bold', fontSize: 20 },
+        // flex + overflow keep every card the height of the window on web, so each Screen's ScrollView scrolls.
+        // Without it the web stack lets cards grow past the window and expects the page to scroll, but the
+        // body never scrolls, so long screens (onboarding "Your privacy") were cut off.
+        cardStyle: { backgroundColor: color.bg.canvas, flex: 1, overflow: 'hidden' },
         // Our own icon instead of the library PNG: consistent style, and no image file to fetch.
         headerBackImage: () => <Icon name="chevronLeft" tint={color.text.primary} />,
         headerBackTitle: 'Back',

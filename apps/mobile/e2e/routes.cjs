@@ -33,14 +33,16 @@ const ROUTES = ['/', '/find-cover', '/friends', '/pet', '/me', '/prototype', '/n
           if (rc.right > vw + 1) over.push(`${el.tagName}:${(el.innerText || '').slice(0, 30)}:${Math.round(rc.right)}`);
         }
         const text = document.body.innerText;
-        return { over: over.slice(0, 3), unmatched: /Unmatched Route|doesn't exist/.test(text), len: text.length };
+        // The body never scrolls, so content taller than the window must sit inside a scroll view.
+        const clipped = document.documentElement.scrollHeight > innerHeight + 1 ? document.documentElement.scrollHeight : 0;
+        return { over: over.slice(0, 3), clipped, unmatched: /Unmatched Route|doesn't exist/.test(text), len: text.length };
       });
-      if (res.over.length || res.unmatched || res.len < 80) { problems++; console.log(`[${width}] ${r}`, JSON.stringify(res)); }
+      if (res.over.length || res.clipped || res.unmatched || res.len < 80) { problems++; console.log(`[${width}] ${r}`, JSON.stringify(res)); }
       if (width !== 390 && ['/', '/find-cover', '/rewards'].includes(r)) await p.screenshot({ path: `${out}/w${width}${r.replace(/\W/g, '_')}.png` });
     }
     if (errs.length) { problems++; console.log(`[${width}] page errors:`, errs.join(' | ')); }
     await p.close();
   }
-  console.log(problems ? `${problems} problems` : `ALL ${ROUTES.length} ROUTES OK at 390/768/1280, no overflow, no errors`);
+  console.log(problems ? `${problems} problems` : `ALL ${ROUTES.length} ROUTES OK at 390/768/1280, no overflow, every screen scrolls, no errors`);
   await b.close();
 })();

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import {
-  Button, Card, Checkbox, Chip, color, confidenceStyle, EmptyState, Icon, IconButton, ListItem, NoticeBanner, PetChip, radius, Screen,
+  Button, Card, Character, Checkbox, Chip, color, confidenceStyle, EmptyState, Icon, IconButton, ListItem, NoticeBanner, PetChip, radius, Screen,
   SectionHeader, space, StatusPill, Text, visitLabel,
 } from '../../design';
 import { DemoClock } from '../../proto/DemoClock';
@@ -36,11 +36,16 @@ export default function Today() {
         <View style={st.header}>
           <View>
             <Text variant="caption" tone="muted">{greeting(now)},</Text>
-            <Text variant="h2">{state.profile.name}!</Text>
+            <Text variant="h2">{state.profile.name}! 👋</Text>
           </View>
-          <View>
-            <IconButton name="reminder" label={`Alerts, ${openAlerts.length} new`} onPress={() => router.push('/notifications')} />
-            {openAlerts.length ? <View style={st.badge}><Text variant="small" tone="inverse">{openAlerts.length}</Text></View> : null}
+          <View style={st.row}>
+            <View>
+              <IconButton name="reminder" label={`Alerts, ${openAlerts.length} new`} onPress={() => router.push('/notifications')} />
+              {openAlerts.length ? <View style={st.badge}><Text variant="small" tone="inverse">{openAlerts.length}</Text></View> : null}
+            </View>
+            <Pressable accessibilityRole="button" accessibilityLabel="Your profile" onPress={() => router.navigate('/me')} style={st.me}>
+              <Character name="avatarToby" height={48} />
+            </Pressable>
           </View>
         </View>
       }
@@ -145,12 +150,12 @@ export default function Today() {
         );
       })}
 
-      <SectionHeader title="Upcoming health" action="See all" onAction={() => router.push('/health')} />
-      {state.health.filter((h) => !h.done).slice(0, 2).map((h) => {
+      <SectionHeader title="Upcoming care" action="See all" onAction={() => router.push('/health')} />
+      {state.health.filter((h) => !h.done).slice(0, 3).map((h, i) => {
         const days = Math.round((h.dueOn.getTime() - now.getTime()) / 86_400_000);
         return (
           <ListItem key={h.id} icon={h.kind === 'vaccine' ? 'vaccine' : h.kind === 'deworming' ? 'medication' : 'calendar'} title={h.title} subtitle={h.detail}
-            meta={days <= 0 ? 'Today' : `Due in ${days} days`} metaTone={days <= 7 ? 'alert' : 'muted'} onPress={() => router.push('/health')} />
+            meta={days <= 0 ? 'Today' : `Due in ${days} days`} metaTone={days <= 7 ? 'alert' : 'muted'} accent={i === 0} onPress={() => router.push('/health')} />
         );
       })}
 
@@ -185,6 +190,7 @@ export default function Today() {
 }
 
 const st = StyleSheet.create({
+  me: { width: 48, height: 48, borderRadius: radius.pill, overflow: 'hidden', backgroundColor: color.action.primary, borderWidth: 1.5, borderColor: color.border.strong, alignItems: 'center', justifyContent: 'center' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' },
   badge: { position: 'absolute', top: 4, right: 4, minWidth: 20, height: 20, borderRadius: radius.pill, backgroundColor: color.status.alert, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },

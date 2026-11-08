@@ -19,6 +19,10 @@ const TEXT: [string, string, string][] = [
   ['alert text on alert tint', color.text.alert, color.status.alertTint],
   ['white on alert (Missed pill)', palette.white, color.status.alert],
   ['success text on card', color.text.success, color.bg.card],
+  ['link text on canvas', color.text.link, color.bg.canvas],
+  ['link text on card', color.text.link, color.bg.card],
+  ['primary text on sunken track', color.text.primary, color.bg.sunken],
+  ['success text on canvas', color.text.success, color.bg.canvas],
   ['success text on success tint', color.text.success, color.status.successTint],
 ];
 
