@@ -18,7 +18,7 @@ export function ExperienceBar() {
   const current: Option['id'] = path.startsWith('/helper-app') ? 'helper' : 'owner';
   const options: Option[] = [
     { id: 'owner', title: `${state.profile.name || 'Neha'}'s app`, detail: 'Pet owner · the Pawsure app', go: () => router.navigate('/') },
-    { id: 'helper', title: `${state.helper.name}'s phone`, detail: 'Helper · WhatsApp, no app to install', go: () => router.navigate('/helper-app') },
+    { id: 'helper', title: `${state.helper.name}'s phone`, detail: 'Helper · WhatsApp (simulated), no app', go: () => router.navigate('/helper-app') },
   ];
   const sel = options.find((o) => o.id === current)!;
 

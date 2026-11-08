@@ -7,6 +7,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import type { ChatMessage } from '../design';
+import { HELPER_APP_TEXT } from './helperAppStrings';
 import { HELPER_TEXT } from './helperStrings';
 import { fmt, HELPER_ID, useProto, type HelperMethod, type Lang, type ProtoTask } from './store';
 
@@ -18,6 +19,7 @@ export function useHelperChat() {
   const { state, dispatch, evaluations, now, code, wallet, ledger } = useProto();
   const h = state.helper;
   const T = HELPER_TEXT[h.language];
+  const A = HELPER_APP_TEXT[h.language];
   const [log, setLog] = useState<Extra[]>([]);
   const [problemOpen, setProblemOpen] = useState(false);
   const [home, setHome] = useState('demo');
@@ -110,7 +112,12 @@ export function useHelperChat() {
         ]
         : [
           { label: T.problem, onPress: () => setProblemOpen(true) },
-          { label: T.myPoints, onPress: () => { say({ from: 'me', time: t, text: T.myPoints }, { from: 'pawsure', time: t, text: T.points(wallet.spendable, state.helper.mode === 'tracked' ? 6 : 0, 41) }); setShowHistory(true); } },
+          { label: T.myPoints, onPress: () => {
+            say({ from: 'me', time: t, text: T.myPoints }, { from: 'pawsure', time: t, text: T.points(wallet.spendable, state.helper.mode === 'tracked' ? 6 : 0, 41) },
+              // Her full record opens as a web page from this link (PS-110): nothing to install.
+              { from: 'pawsure', time: t, link: { title: A.card, url: 'pawsure.in/card', description: A.cardSub, onPress: () => router.push('/helper-app/card') } });
+            setShowHistory(true);
+          } },
           { label: T.shareRecord, onPress: () => say({ from: 'me', time: t, text: T.shareRecord }, { from: 'pawsure', time: t, text: T.shareOff }) },
           { label: T.stop, onPress: () => { dispatch({ type: 'helper', patch: { consent: 'withdrawn' } }); say({ from: 'me', time: t, text: T.stop }, { from: 'pawsure', time: t, text: T.stopped }); } },
         ],

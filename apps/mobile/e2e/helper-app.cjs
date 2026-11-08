@@ -25,7 +25,7 @@ const fs = require('fs');
     await btn(/^Viewing /).click();
   });
   await step("switch to Sunita's phone (Marathi chat list)", async () => {
-    await pick("Sunita's phone"); await see('चॅट'); await see('Pawsure');
+    await pick("Sunita's phone"); await see('WhatsApp'); await see('Pawsure');
     await p.screenshot({ path: `${out}/h1-home.png` });
   });
   await step('open chat, send photo check-in with the camera button', async () => {
@@ -33,11 +33,12 @@ const fs = require('fs');
     await btn('फोटो पाठवा').click(); await see('धन्यवाद! नोंद झाली.');
     await p.waitForTimeout(400); await p.screenshot({ path: `${out}/h2-chat.png` });
   });
-  await step('Pawsure card: points, history, rights', async () => {
-    await btn('Back to chats').click(); await see('माझे Pawsure कार्ड');
-    await p.getByRole('button').filter({ hasText: 'माझे Pawsure कार्ड', visible: true }).first().click();
+  await step('My points sends a link; the Pawsure card opens in the in-app browser', async () => {
+    await p.getByRole('button', { name: 'माझे पॉइंट' }).filter({ visible: true }).last().click();
+    await p.getByRole('link', { name: /माझे Pawsure कार्ड/ }).filter({ visible: true }).last().click();
     await see('पॉइंटचा हिशोब'); await see('तुमचा डेटा');
     await p.screenshot({ path: `${out}/h3-card.png`, fullPage: false });
+    await btn('Close').click(); await see('बिझनेस अकाउंट');
   });
   await step("switch back: Neha's Today shows the walk with evidence", async () => {
     await pick("Neha's app"); await see('Neha!');
@@ -45,7 +46,9 @@ const fs = require('fs');
     if (!/Likely|Confirmed/.test(walk)) throw new Error('walk: ' + walk.slice(0, 80));
   });
   await step('helper stops from her card; owner sees it', async () => {
-    await pick("Sunita's phone"); await p.getByRole('button').filter({ hasText: 'माझे Pawsure कार्ड', visible: true }).first().click();
+    await pick("Sunita's phone"); await btn(/^Pawsure chat/).click();
+    await p.getByRole('button', { name: 'माझे पॉइंट' }).filter({ visible: true }).last().click();
+    await p.getByRole('link', { name: /माझे Pawsure कार्ड/ }).filter({ visible: true }).last().click();
     await btn('Pawsure थांबवा').click(); await see('सर्व घरांसाठी थांबवायचे?');
     await p.getByRole('button', { name: 'Pawsure थांबवा' }).filter({ visible: true }).first().click();
     await pick("Neha's app"); await see('Neha!');

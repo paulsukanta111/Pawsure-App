@@ -1,10 +1,10 @@
-// Helper experience, "My Pawsure card": the web page her "My points" link opens. Her record,
+// Helper experience, "My Pawsure card": the web page the link in her WhatsApp chat opens. Her record,
 // points across homes, coupons, holds explained, and her rights (PS-027, PS-029, PS-034, PS-110, PS-119).
 import { router } from 'expo-router';
-import { Stack } from 'expo-router/js-stack';
 import { useState } from 'react';
-import { View } from 'react-native';
-import { Button, Card, CharacterAvatar, color, KeyValue, NoticeBanner, radius, Screen, SectionHeader, space, Stat, Text, useToast } from '../../design';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button, Card, CharacterAvatar, chatSim as wa, color, Icon, KeyValue, NoticeBanner, radius, Screen, SectionHeader, space, Stat, Text, useToast } from '../../design';
 import { HELPER_APP_TEXT } from '../../proto/helperAppStrings';
 import { useProto } from '../../proto/store';
 import { useHelperChat } from '../../proto/useHelperChat';
@@ -20,8 +20,22 @@ export default function HelperCard() {
   const stateLabel = { earned: A.earned, held: A.held, redeemed: A.redeemed, reversed: A.reversed } as Record<string, string>;
 
   return (
+    <View style={{ flex: 1, backgroundColor: color.bg.canvas }}>
+      {/* Opened from the link in her WhatsApp chat, so it shows in WhatsApp's in-app browser. */}
+      <SafeAreaView edges={['top']} style={st.browser}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={() => (router.canGoBack() ? router.back() : router.replace('/helper-app/chat'))} hitSlop={8} style={st.close}>
+          <Text variant="h3" style={{ color: wa.text }}>✕</Text>
+        </Pressable>
+        <View style={{ flex: 1 }}>
+          <Text variant="bodyStrong" style={{ color: wa.text }} numberOfLines={1}>{A.cardTitle}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Icon name="shield" size={12} tint={wa.muted} />
+            <Text variant="small" style={{ color: wa.muted }}>pawsure.in/card</Text>
+          </View>
+        </View>
+        <Icon name="more" size={22} tint={wa.text} />
+      </SafeAreaView>
     <Screen>
-      <Stack.Screen options={{ title: A.cardTitle }} />
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
         <CharacterAvatar name="avatarBunji" size={64} />
         <View style={{ flex: 1 }}>
@@ -85,7 +99,12 @@ export default function HelperCard() {
           ) : <Button label={A.stop} kind="outlined" onPress={() => setConfirmStop(true)} full />
         ) : null}
       </Card>
-      <Button label={`← ${A.chats}`} kind="secondary" onPress={() => (router.canGoBack() ? router.back() : router.replace('/helper-app'))} full />
     </Screen>
+    </View>
   );
 }
+
+const st = StyleSheet.create({
+  browser: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingHorizontal: space.md, paddingVertical: space.sm, backgroundColor: wa.surface, borderBottomWidth: 1, borderBottomColor: wa.divider },
+  close: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+});

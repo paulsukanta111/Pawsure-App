@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { addMinutes } from '@pawsure/domain';
-import { Button, ChatThread, Chip, EmptyState, NoticeBanner, Screen, space, TextField, type ChatMessage } from '../design';
+import { Button, Chip, WaPhoneChat, EmptyState, NoticeBanner, Screen, space, TextField, type ChatMessage } from '../design';
 import { lowerFirst, requestMessage } from '../proto/friendMessages';
 import { fmt, useProto } from '../proto/store';
 
@@ -61,7 +61,7 @@ export default function FriendRequest() {
           {ids.map((id) => <Chip key={id} label={friends.find((f) => f.id === id)!.displayName} selected={current === id} onPress={() => setWho(id)} />)}
         </View>
       ) : null}
-      <ChatThread title="Pawsure" subtitle={`To ${friend.displayName}`} messages={msgs} />
+      <WaPhoneChat title="Pawsure" subtitle={`Business account · on ${friend.displayName}'s phone`} messages={msgs} onBack={() => router.dismissTo('/find-cover')} />
       {r.state !== 'confirmed' && r.state !== 'declined' ? (
         <View style={{ gap: space.sm }}>
           <TextField label={`Reply as ${friend.displayName}`} value={typed} onChangeText={setTyped} placeholder="Type a reply, e.g. 5:30 la jamel" onSubmitEditing={() => reply(typed)} />

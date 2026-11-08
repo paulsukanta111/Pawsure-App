@@ -1,6 +1,6 @@
 // Every foreground/background pairing the component library uses, checked against WCAG AA.
 import { describe, expect, it } from 'vitest';
-import { color, contrastRatio, palette } from '../src';
+import { chatSim, color, contrastRatio, palette } from '../src';
 
 const TEXT: [string, string, string][] = [
   ['primary text on canvas', color.text.primary, color.bg.canvas],
@@ -23,6 +23,14 @@ const TEXT: [string, string, string][] = [
   ['link text on card', color.text.link, color.bg.card],
   ['primary text on sunken track', color.text.primary, color.bg.sunken],
   ['success text on canvas', color.text.success, color.bg.canvas],
+  ['chat sim: header text', chatSim.onHeader, chatSim.header],
+  ['chat sim: text on incoming bubble', chatSim.text, chatSim.bubbleIn],
+  ['chat sim: text on outgoing bubble', chatSim.text, chatSim.bubbleOut],
+  ['chat sim: muted on incoming bubble', chatSim.muted, chatSim.bubbleIn],
+  ['chat sim: muted on outgoing bubble', chatSim.muted, chatSim.bubbleOut],
+  ['chat sim: text on wallpaper', chatSim.text, chatSim.wallpaper],
+  ['chat sim: reply button text', chatSim.action, chatSim.surface],
+  ['chat sim: unread badge', chatSim.onBadge, chatSim.badge],
   ['success text on success tint', color.text.success, color.status.successTint],
 ];
 

@@ -101,7 +101,7 @@ function Routes() {
           helper view works whatever state the owner's app is in. */}
       <Stack.Screen name="helper-app/index" options={{ headerShown: false }} />
       <Stack.Screen name="helper-app/chat" options={{ headerShown: false }} />
-      <Stack.Screen name="helper-app/card" options={{ title: 'Pawsure card' }} />
+      <Stack.Screen name="helper-app/card" options={{ headerShown: false }} />
       {/* Opened from a WhatsApp link by the backup, who has no account (PS-102). */}
       <Stack.Screen name="look-in" options={{ title: 'Pawsure look-in' }} />
       {/* Used both during onboarding and in the app. */}

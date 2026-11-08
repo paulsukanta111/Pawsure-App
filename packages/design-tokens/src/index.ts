@@ -87,6 +87,33 @@ export const iconFill = {
   paper: '#FEF8F1',
 } as const;
 
+/**
+ * Simulated WhatsApp screens (the helper and friend channel, PS-020, PS-110). Used only by the
+ * prototype's channel simulations so reviewers see what the helper actually sees. Text colours are
+ * chosen to pass 4.5:1; unread badges use dark text on the green.
+ */
+export const chatSim = {
+  header: '#008069',
+  onHeader: '#FFFFFF',
+  wallpaper: '#EFE7DE',
+  bubbleIn: '#FFFFFF',
+  bubbleOut: '#D9FDD3',
+  text: '#111B21',
+  muted: '#54656F',
+  action: '#008069',
+  badge: '#25D366',
+  onBadge: '#111B21',
+  tick: '#53BDEB',
+  divider: '#E9EDEF',
+  surface: '#FFFFFF',
+  /** Decorative fills: grey avatar, media placeholder, link preview, active nav pill. */
+  avatarGrey: '#DFE5E7',
+  media: '#CFD8DC',
+  linkBg: '#F0F2F5',
+  navActive: '#D8FDD2',
+  shadow: '#000000',
+} as const;
+
 /** Icon geometry: 24x24 UI icons, 48x48 feature illustrations, one stroke weight. */
 export const iconSpec = { grid: 24, largeGrid: 48, stroke: 2, largeStroke: 2.5, sizes: { xs: 16, sm: 20, md: 24, lg: 32, xl: 48 } } as const;
 

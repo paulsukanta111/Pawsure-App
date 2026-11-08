@@ -7,8 +7,8 @@ import { Text } from './Text';
 import { color, radius, space, touchTarget } from './theme';
 
 // ---------------------------------------------------------------------------
-// Chat thread: how a WhatsApp/IVR conversation looks to the helper or friend.
-// Deliberately Pawsure-styled, not a copy of any messaging app's look.
+// Chat thread in Pawsure style (owner-side previews). The helper and friend channel
+// simulations use the WhatsApp-style thread in ./whatsapp.tsx.
 
 export interface ChatMessage {
   id: string;
@@ -19,6 +19,8 @@ export interface ChatMessage {
   voice?: { seconds: number; transcript?: string };
   time: string;
   replies?: { label: string; onPress: () => void }[];
+  /** A link with a preview card (e.g. the helper's Pawsure card page). */
+  link?: { title: string; url: string; description?: string; onPress: () => void };
 }
 
 /** Chat thread. `bare` drops the card frame and header, for a full-screen chat with its own header. */

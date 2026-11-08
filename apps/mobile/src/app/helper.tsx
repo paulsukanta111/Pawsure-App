@@ -2,7 +2,7 @@
 // full-screen in the helper experience (/helper-app). Logic lives in proto/useHelperChat.
 import { router } from 'expo-router';
 import { View } from 'react-native';
-import { Button, Card, ChatThread, Chip, EmptyState, KeyValue, Loading, NoticeBanner, Screen, SectionHeader, space } from '../design';
+import { Button, Card, Chip, WaPhoneChat, EmptyState, KeyValue, Loading, NoticeBanner, Screen, SectionHeader, space } from '../design';
 import { DemoClock } from '../proto/DemoClock';
 import { HOMES, useHelperChat } from '../proto/useHelperChat';
 import { useProto } from '../proto/store';
@@ -30,7 +30,7 @@ export default function HelperWhatsApp() {
           {HOMES.map((x) => <Chip key={x.id} label={x.label} selected={home === x.id} onPress={() => setHome(x.id)} />)}
         </View>
       ) : null}
-      <ChatThread title="Pawsure" subtitle={`Business account · ${h.language === 'en' ? 'English' : h.language === 'hi' ? 'Hindi' : 'Marathi'}`} messages={msgs}
+      <WaPhoneChat title="Pawsure" subtitle={`Business account · ${h.language === 'en' ? 'English' : h.language === 'hi' ? 'Hindi' : 'Marathi'}`} messages={msgs} onBack={() => router.back()}
         footer={uploading ? <Loading label={uploading} /> : undefined} />
 
       {showHistory && h.consent === 'given' ? (
