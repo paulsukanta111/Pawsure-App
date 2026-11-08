@@ -141,9 +141,9 @@ const fs = require('fs');
     await back(); await see('Neha!');
   });
   await step('13 Trusted helper mode → Covered', async () => {
-    await btn('Trusted helper mode').click(); await see('Not marked yet');
+    await tab('Trusted helper mode'); await see('Not marked yet');
     await btn('Covered').click(); await see('Covered care day');
-    await btn('Sunita (helper)').click();
+    await tab('Sunita (helper)');
   });
   await step('14 Ask Pawsure: parse, clarify key, top 3, approve', async () => {
     await jump('Jump to 3:45 pm');

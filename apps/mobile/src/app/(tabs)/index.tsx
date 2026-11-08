@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import {
-  Button, Card, CharacterAvatar, Checkbox, Chip, color, confidenceStyle, EmptyState, Icon, IconButton, ListItem, NoticeBanner, PetChip, radius, Screen,
+  Button, Card, CharacterAvatar, Checkbox, SegmentedTabs, color, confidenceStyle, EmptyState, Icon, IconButton, ListItem, NoticeBanner, PetChip, radius, Screen,
   SectionHeader, space, StatusPill, Text, visitLabel,
 } from '../../design';
 import { CONSENT_TEXT } from '../../proto/HelperInvite';
@@ -88,11 +88,16 @@ export default function Today() {
       {petIdx === 0 ? (<>
       <Card tone="brand">
         <Text variant="h3">Who's caring today?</Text>
-        <View style={st.row}>
-          <Chip label={`${helper.name} (helper)`} selected={carer === 'helper' && !trusted} onPress={() => dispatch({ type: 'helper', patch: { mode: 'tracked', unavailableToday: false } })} />
-          <Chip label="Trusted helper mode" selected={trusted} onPress={() => dispatch({ type: 'helper', patch: { mode: 'trusted', unavailableToday: false } })} />
-          {carer === 'friend' ? <Chip label="Friend cover" selected /> : null}
-        </View>
+        {/* A choice, so a segmented control: it must not look like the action button below. */}
+        <SegmentedTabs<'helper' | 'trusted' | 'friend'>
+          value={carer === 'friend' ? 'friend' : trusted ? 'trusted' : 'helper'}
+          onChange={(v) => { if (v !== 'friend') dispatch({ type: 'helper', patch: { mode: v === 'trusted' ? 'trusted' : 'tracked', unavailableToday: false } }); }}
+          options={[
+            { value: 'helper', label: `${helper.name} (helper)` },
+            { value: 'trusted', label: 'Trusted helper mode' },
+            ...(carer === 'friend' ? [{ value: 'friend' as const, label: 'Friend cover' }] : []),
+          ]}
+        />
         {helper.unavailableToday && carer !== 'friend' ? (
           <NoticeBanner icon="care" title={`${helper.name} can't come today`} body="Your original plan is kept for the record. Find cover so the tasks are still done." tone="alert" />
         ) : trusted ? (
@@ -103,9 +108,9 @@ export default function Today() {
           </Text>
         )}
         {helper.unavailableToday ? (
-          <Button label="Find cover" icon="care" onPress={() => router.push('/find-cover')} />
+          <Button label="Find cover" icon="care" full onPress={() => router.push('/find-cover')} />
         ) : (
-          <Button label={`${helper.name} can't come today`} kind="secondary" icon="care" onPress={() => { dispatch({ type: 'helper', patch: { unavailableToday: true } }); router.push('/find-cover'); }} />
+          <Button label={`${helper.name} can't come today`} kind="secondary" icon="care" full onPress={() => { dispatch({ type: 'helper', patch: { unavailableToday: true } }); router.push('/find-cover'); }} />
         )}
       </Card>
 

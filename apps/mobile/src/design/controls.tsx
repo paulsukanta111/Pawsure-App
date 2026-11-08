@@ -119,7 +119,7 @@ export function SegmentedTabs<T extends string>({ options, value, onChange }: { 
         const on = o.value === value;
         return (
           <Pressable key={o.value} accessibilityRole="tab" accessibilityState={{ selected: on }} onPress={() => onChange(o.value)} style={[s.segment, on && s.segmentOn]}>
-            <Text variant="label" tone={on ? undefined : 'muted'}>{o.label}</Text>
+            <Text variant="label" tone={on ? undefined : 'muted'} align="center">{o.label}</Text>
           </Pressable>
         );
       })}

@@ -10,6 +10,7 @@ import { AuthProvider, useAuth } from '../lib/auth';
 import { PrototypeProvider, useProto } from '../proto/store';
 import { ToastProvider } from '../design/states';
 import { ExperienceBar } from '../proto/ExperienceBar';
+import { PhoneFrame } from '../proto/PhoneFrame';
 
 const INLINE_FONTS = process.env.EXPO_PUBLIC_INLINE_FONTS === '1';
 
@@ -26,7 +27,7 @@ export default function RootLayout() {
           {/* Prototype bar outside the app: switch between the owner's app and the helper's phone. */}
           <View style={{ flex: 1 }}>
             <ExperienceBar />
-            <View style={{ flex: 1 }}><Routes /></View>
+            <View style={{ flex: 1 }}><PhoneFrame><Routes /></PhoneFrame></View>
           </View>
         </ToastProvider>
       </PrototypeProvider>

@@ -1,6 +1,6 @@
 // Navigation frozen in PS-108: Today · Find cover · Friends · Pet · Me.
 // Styled after the app mockups: cream bar, bold label on the selected tab, and the primary
-// action (Find cover) in a yellow circle, like the mockup's "+" button, kept inside the bar.
+// action (Find cover) in a yellow circle when open, like the mockup's "+" button.
 import { Tabs } from 'expo-router/js-tabs';
 import { View } from 'react-native';
 import { color, Icon, radius, Text, type IconName } from '../../design';
@@ -23,11 +23,12 @@ export default function TabsLayout() {
         tabBarIcon: ({ focused }) =>
           route.name === 'find-cover' ? (
             // Sits inside the bar (no overhang over the screen), icon optically centred.
+            // Yellow circle only while Find cover is the open tab; otherwise a plain outline like the rest.
             <View style={{
-              width: 40, height: 40, borderRadius: radius.pill, backgroundColor: color.action.primary,
+              width: 40, height: 40, borderRadius: radius.pill, backgroundColor: focused ? color.action.primary : 'transparent',
               alignItems: 'center', justifyContent: 'center',
             }}>
-              <Icon name="findCover" size={24} filled={focused} />
+              <Icon name="findCover" size={focused ? 24 : 26} tint={focused ? color.text.primary : color.text.muted} filled={focused} accent={false} />
             </View>
           ) : (
             // Selected tab = filled Pawsure icon; others are plain outlines.

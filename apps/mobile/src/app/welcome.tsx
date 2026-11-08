@@ -2,9 +2,10 @@
 // "Next" through the three intro slides, "Get started", and "Log in" for returning users.
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { Button, Character, color, radius, Screen, space, Text, type CharacterName } from '../design';
 import { WELCOME_HERO } from '../design/welcomeHero';
+import { useFrameWidth } from '../proto/PhoneFrame';
 
 type Slide = { art: 'hero' | CharacterName; title: string; body: string };
 const SLIDES: Slide[] = [
@@ -16,7 +17,7 @@ const SLIDES: Slide[] = [
 export default function Welcome() {
   const [i, setI] = useState(0);
   const slide = SLIDES[i]!;
-  const { width } = useWindowDimensions();
+  const width = useFrameWidth();
   // Explicit size from the screen width and the artwork's own ratio (no letterboxing gap).
   const heroW = Math.min(width - 32, 420);
   const heroH = Math.round((heroW * WELCOME_HERO.height) / WELCOME_HERO.width);
