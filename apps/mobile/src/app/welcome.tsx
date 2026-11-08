@@ -3,7 +3,8 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
-import { Button, Character, CheckInArt, color, radius, Screen, space, Text, type CharacterName } from '../design';
+import { Button, Character, color, radius, Screen, space, Text, type CharacterName } from '../design';
+import { WELCOME_CHECKIN } from '../design/welcomeCheckIn';
 import { WELCOME_HERO } from '../design/welcomeHero';
 import { useFrameWidth } from '../proto/PhoneFrame';
 
@@ -21,6 +22,8 @@ export default function Welcome() {
   // Explicit size from the screen width and the artwork's own ratio (no letterboxing gap).
   const heroW = Math.min(width - 32, 420);
   const heroH = Math.round((heroW * WELCOME_HERO.height) / WELCOME_HERO.width);
+  const checkH = Math.min(Math.round((heroW * WELCOME_CHECKIN.height) / WELCOME_CHECKIN.width), 400);
+  const checkW = Math.round((checkH * WELCOME_CHECKIN.width) / WELCOME_CHECKIN.height);
   return (
     <Screen background={color.bg.paper} footer={
       <>
@@ -42,7 +45,9 @@ export default function Welcome() {
         {slide.art === 'hero' ? (
           <Image source={WELCOME_HERO} resizeMode="contain" accessibilityLabel="A dog and a cat in Pawsure hoodies; the dog checks a phone while a friend gives a thumbs up" style={{ width: heroW, height: heroH }} />
         ) : slide.art === 'checkIn' ? (
-          <View style={{ height: heroH, justifyContent: 'center' }}><CheckInArt width={Math.min(heroW, Math.round(heroH * 300 / 280))} label="A phone showing the helper's WhatsApp check-in: a photo of the bowl with today's code, marked recorded" /></View>
+          // Portrait artwork: capped in height so the slide still fits a phone screen with the button.
+          <Image source={WELCOME_CHECKIN} resizeMode="contain" style={{ width: checkW, height: checkH, borderRadius: radius.lg }}
+            accessibilityLabel="Bruno eats from his bowl while a phone on the table shows the helper's WhatsApp check-in: a photo of the bowl and a voice note" />
         ) : (
           <View style={{ height: heroH, justifyContent: 'center' }}><Character name={slide.art} height={Math.min(heroH, 250)} label={slide.title} /></View>
         )}
