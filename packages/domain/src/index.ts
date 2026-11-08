@@ -9,3 +9,4 @@ export * from './friendRequest';
 export * from './codeCard';
 export * from './rewards';
 export * from './aloneWindow';
+export * from './requestParser';

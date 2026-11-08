@@ -6,6 +6,8 @@ import { today } from '../demo/data';
 import { fmt, useProto } from './store';
 
 const JUMPS: { label: string; h: number; m: number }[] = [
+  { label: '8:30', h: 8, m: 30 },
+  { label: '1:30', h: 13, m: 30 },
   { label: '3:45', h: 15, m: 45 },
   { label: '4:45', h: 16, m: 45 },
   { label: '5:15', h: 17, m: 15 },
@@ -23,7 +25,7 @@ export function DemoClock({ compact }: { compact?: boolean }) {
         {JUMPS.map((j) => {
           const on = state.demoTime?.getTime() === today(j.h, j.m).getTime();
           return (
-            <Pressable key={j.label} accessibilityRole="button" accessibilityLabel={`Jump to ${j.label} pm`} onPress={() => dispatch({ type: 'set_clock', at: today(j.h, j.m) })} style={[s.chip, on && s.on]}>
+            <Pressable key={j.label} accessibilityRole="button" accessibilityLabel={`Jump to ${j.label} ${j.h < 12 ? 'am' : 'pm'}`} onPress={() => dispatch({ type: 'set_clock', at: today(j.h, j.m) })} style={[s.chip, on && s.on]}>
               <Text variant="small" style={{ fontFamily: 'Mukta_600SemiBold' }}>{j.label}</Text>
             </Pressable>
           );
@@ -43,7 +45,7 @@ export function DemoClock({ compact }: { compact?: boolean }) {
 
 const s = StyleSheet.create({
   bar: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm, padding: space.sm, paddingHorizontal: space.md, borderRadius: radius.lg, backgroundColor: color.bg.raised, borderWidth: 1, borderStyle: 'dashed', borderColor: color.border.control },
-  row: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
+  row: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs, width: '100%' },
   chip: { minHeight: 32, minWidth: 40, paddingHorizontal: space.sm, borderRadius: radius.pill, borderWidth: 1, borderColor: color.border.control, alignItems: 'center', justifyContent: 'center', backgroundColor: color.bg.card },
   on: { backgroundColor: color.action.primary, borderColor: color.border.strong },
 });

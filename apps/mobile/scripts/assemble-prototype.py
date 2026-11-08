@@ -1,6 +1,7 @@
 """Assemble the Expo web export into one self-contained prototype page."""
 import base64, glob, os, sys
 dist, fonts_root, out = sys.argv[1], sys.argv[2], sys.argv[3]
+title = sys.argv[4] if len(sys.argv) > 4 else 'Pawsure Prototype'
 js_path = glob.glob(os.path.join(dist, '_expo/static/js/web/entry-*.js'))
 assert len(js_path) == 1, js_path
 js = open(js_path[0], encoding='utf-8').read()
@@ -19,7 +20,7 @@ for family, rel in FACES:
     data = base64.b64encode(open(os.path.join(fonts_root, rel), 'rb').read()).decode()
     faces.append(f"@font-face{{font-family:'{family}';src:url(data:font/ttf;base64,{data}) format('truetype');font-display:block}}")
 
-page = f"""<title>Pawsure Prototype</title>
+page = f"""<title>{title}</title>
 <style>
 /* Single light look on purpose: the app's moodboard palette is light-only. */
 :root {{ --canvas: #F4EED8; --ink: #20201D; color-scheme: light }}

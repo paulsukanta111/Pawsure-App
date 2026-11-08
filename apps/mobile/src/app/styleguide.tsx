@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
-  Button, Card, Checkbox, Chip, color, contrastRatio, Icon, icons, IllustrationSlot, ListItem, Logo, MetricCard, palette,
+  Button, Card, Checkbox, Chip, color, contrastRatio, Icon, icons, ListItem, Logo, MetricCard, palette,
   ProgressDots, radius, Screen, SectionHeader, SegmentedTabs, space, StatusPill, Text, TextField, Toggle, type, type IconName,
+  BrunoFace, EmptyState, ErrorState, Loading, OtpInput, Scene, Skeleton, StepHeader,
 } from '../design';
 
 const SWATCHES: { name: string; hex: string; use: string }[] = [
@@ -111,8 +112,20 @@ export default function StyleGuide() {
       </Section>
 
       <Section n="07" title="Illustration style">
-        <Text variant="caption" tone="muted">Simple, playful, hand-drawn. Final artwork slots in here; nothing in the UI depends on it.</Text>
-        <IllustrationSlot name="onboarding hero" />
+        <Text variant="caption" tone="muted">Bruno: an original flat Indie dog with a yellow bandana. Thick charcoal outline, moodboard palette.</Text>
+        <View style={st.row}>
+          <BrunoFace size={72} mood="happy" /><BrunoFace size={72} mood="wink" /><BrunoFace size={72} mood="sleepy" /><BrunoFace size={72} mood="worried" />
+        </View>
+        <Scene name="welcome" height={150} />
+      </Section>
+
+      <Section n="10" title="States">
+        <Loading label="Reading your request…" />
+        <Skeleton lines={3} />
+        <EmptyState title="No routine yet" body="Add feeding, walks or medicine." action="Add a task" onAction={() => {}} />
+        <ErrorState title="Couldn't send" body="Check your connection and try again." retry="Try again" onRetry={() => {}} />
+        <OtpInput value="1234" onChange={() => {}} />
+        <StepHeader step={2} of={6} title="Your privacy" />
       </Section>
 
       <Section n="08" title="Design principles">

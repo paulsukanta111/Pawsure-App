@@ -8,7 +8,7 @@ import { fmt, useProto } from '../proto/store';
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'];
 
 export default function BasicPhone() {
-  const { state, dispatch, evaluations, now } = useProto();
+  const { state, dispatch, evaluations, now, code } = useProto();
   const [registered, setRegistered] = useState(true);
   const [entry, setEntry] = useState('');
   const [log, setLog] = useState<string[]>([]);
@@ -43,6 +43,7 @@ export default function BasicPhone() {
           <Chip label="Someone else's phone" selected={!registered} onPress={() => setRegistered(false)} />
         </View>
         <Button label="Missed call on arrival" icon="phone" onPress={() => call('arrival_call')} full />
+        <Text variant="caption">Today's code on the food-box card: <Text variant="label">{code ?? 'no card'}</Text> (simulated)</Text>
         <View style={st.screen}>
           <Text variant="small" tone="inverse">Voice: "{state.pet.name}, {task.title}. Press today's code."</Text>
           <Text variant="h3" tone="inverse">{entry.padEnd(4, '_')}</Text>

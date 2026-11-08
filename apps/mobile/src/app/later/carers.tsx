@@ -31,6 +31,7 @@ export default function Carers() {
       ))}
       <SectionHeader title="How levels work" />
       {LEVELS.map((l) => <ListItem key={l.level} icon="shield" title={l.level} subtitle={l.how} />)}
+      <ListItem icon="profile" title="Ravi's full profile" subtitle="ID verification, levels, skills, history" onPress={() => router.push('/later/carer')} />
       <ListItem icon="activity" title="See a carer visit" onPress={() => router.push('/later/carer-visit')} />
     </Screen>
   );

@@ -1,7 +1,7 @@
 // O1 Mobile + OTP + consent (PS-001, PS-002). In demo mode the code is shown on screen.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Linking, View } from 'react-native';
-import { Button, Card, Checkbox, Chip, ProgressDots, Screen, space, Text, TextField } from '../design';
+import { Button, Card, Checkbox, Chip, Loading, OtpInput, ProgressDots, Screen, space, Text, TextField } from '../design';
 import { DEMO_CODE, useAuth } from '../lib/auth';
 
 type Lang = 'en' | 'hi' | 'mr';
@@ -21,6 +21,13 @@ export default function SignIn() {
   const [lang, setLang] = useState<Lang>('en');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resendIn, setResendIn] = useState(0);
+
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const t = setTimeout(() => setResendIn((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendIn]);
 
   const submitPhone = async () => {
     setBusy(true);
@@ -30,6 +37,7 @@ export default function SignIn() {
     if (!r.ok) return setError(r.message);
     setPhone(r.phone!);
     setStep('code');
+    setResendIn(30);
   };
 
   const submitCode = async () => {
@@ -51,7 +59,7 @@ export default function SignIn() {
           <Text variant="caption">
             {step === 'phone'
               ? 'No SMS is sent. Enter any 10-digit Indian mobile number to try the app with a sample household.'
-              : `Your demo code is ${DEMO_CODE}.`}
+              : `No SMS was sent (simulated). Your demo code is ${DEMO_CODE}.`}
           </Text>
         </Card>
       ) : null}
@@ -83,20 +91,17 @@ export default function SignIn() {
         </>
       ) : (
         <>
-          <TextField
-            label="6-digit code"
-            placeholder="••••••"
-            value={code}
-            onChangeText={setCode}
-            keyboardType="number-pad"
-            textContentType="oneTimeCode"
-            autoComplete="sms-otp"
-            maxLength={6}
-            autoFocus
-            onSubmitEditing={submitCode}
-          />
+          <OtpInput value={code} onChange={(v) => { setCode(v); setError(null); }} error={!!error} onSubmit={submitCode} />
           {error ? <Text variant="caption" tone="alert" accessibilityLiveRegion="polite">{error}</Text> : null}
+          {busy ? <Loading label="Verifying…" /> : null}
           <Button label={busy ? 'Signing in…' : 'Sign in'} onPress={submitCode} disabled={busy || code.length < 6} full />
+          <Button
+            label={resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'}
+            kind="outlined"
+            disabled={resendIn > 0}
+            onPress={() => { setResendIn(30); setCode(''); setError(null); }}
+            full
+          />
           <Button label="Change number" kind="outlined" onPress={() => { setStep('phone'); setCode(''); setError(null); }} full />
         </>
       )}

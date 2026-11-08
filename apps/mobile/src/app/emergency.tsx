@@ -33,6 +33,16 @@ export default function Emergency() {
         <Text variant="small" tone="muted">Owner-provided. {state.helper.name} and {state.backup.name} can open it from WhatsApp during a visit or incident.</Text>
       </Card>
 
+      <SectionHeader title="Emergency contacts" />
+      <Card>
+        <KeyValue k={`Own vet · ${state.pet.vet.name.split(',')[0]}`} v={state.pet.vet.phone} />
+        <KeyValue k="Nearest 24x7 clinic" v={state.pet.clinic24x7} />
+        <KeyValue k={`Backup · ${state.backup.name}`} v={state.backup.phone} />
+        <KeyValue k={`Helper · ${state.helper.name}`} v={state.helper.phone} />
+        {state.coOwners.map((c) => <KeyValue key={c.phone} k={`Co-owner · ${c.name}`} v={c.phone} />)}
+        <Text variant="small" tone="muted">Who is called first depends on severity: see below.</Text>
+      </Card>
+
       <SectionHeader title="Report a problem" />
       {GROUPS.map((g) => (
         <View key={g.severity} style={{ gap: space.sm }}>

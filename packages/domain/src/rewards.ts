@@ -74,3 +74,61 @@ export function spendableBalance(entries: readonly LedgerEntry[], helperId: stri
   const redeemed = entries.filter((e) => e.helperId === helperId && e.state === 'redeemed').reduce((s, e) => s + e.points, 0);
   return Math.max(0, earned - redeemed);
 }
+
+// ---------------------------------------------------------------------------
+// Wallet, redemption and mismatch holds (PS-042, PS-044, PS-126)
+
+export interface WalletSummary {
+  /** Earned or released, not yet expired. */
+  earned: number;
+  /** Held while a mismatch is reviewed. */
+  held: number;
+  redeemed: number;
+  spendable: number;
+  /** Spendable points that expire within 30 days. */
+  expiringSoon: number;
+  couponsAvailable: number;
+  pointsToNextCoupon: number;
+}
+
+const DAY_MS = 86_400_000;
+
+function expiryOf(e: LedgerEntry): Date {
+  const d = new Date(e.at);
+  d.setUTCMonth(d.getUTCMonth() + REWARD_POLICY.expiryMonths);
+  return d;
+}
+
+export function walletSummary(entries: readonly LedgerEntry[], helperId: string, now: Date): WalletSummary {
+  const mine = entries.filter((e) => e.helperId === helperId);
+  const live = mine.filter((e) => (e.state === 'earned' || e.state === 'released') && expiryOf(e) > now);
+  const earned = live.reduce((s, e) => s + e.points, 0);
+  const held = mine.filter((e) => e.state === 'held').reduce((s, e) => s + e.points, 0);
+  const redeemed = mine.filter((e) => e.state === 'redeemed').reduce((s, e) => s + e.points, 0);
+  const spendable = Math.max(0, earned - redeemed);
+  const expiringSoon = Math.min(spendable, live.filter((e) => expiryOf(e).getTime() - now.getTime() <= 30 * DAY_MS).reduce((s, e) => s + e.points, 0));
+  const couponsAvailable = Math.floor(spendable / REWARD_POLICY.pointsPerCoupon);
+  return { earned, held, redeemed, spendable, expiringSoon, couponsAvailable, pointsToNextCoupon: REWARD_POLICY.pointsPerCoupon - (spendable % REWARD_POLICY.pointsPerCoupon) };
+}
+
+/** Redeem one ₹20 coupon (500 points). Returns null if there aren't enough points. Coupons only, never cash. */
+export function redeemCoupon(entries: readonly LedgerEntry[], helperId: string, now: Date, newId: string): LedgerEntry | null {
+  if (walletSummary(entries, helperId, now).spendable < REWARD_POLICY.pointsPerCoupon) return null;
+  return { id: newId, helperId, householdId: '*', taskId: `coupon:${newId}`, points: REWARD_POLICY.pointsPerCoupon, state: 'redeemed', reason: `₹${REWARD_POLICY.couponValueRupees} coupon`, at: now };
+}
+
+export type HoldDecision = 'release' | 'reverse';
+
+/** Close a mismatch hold with a reason. Only held entries change; one mismatch is never a misconduct finding. */
+export function resolveHold(entry: LedgerEntry, decision: HoldDecision, at: Date, reason: string): LedgerEntry {
+  if (entry.state !== 'held') return entry;
+  if (!reason.trim()) throw new Error('A hold is closed with a reason');
+  return { ...entry, state: decision === 'release' ? 'released' : 'reversed', reason, at: entry.at, holdUntil: at };
+}
+
+/** Holds release automatically when nobody decides within 7 days. */
+export function autoReleaseHolds(entries: readonly LedgerEntry[], now: Date): LedgerEntry[] {
+  return entries.map((e) => (e.state === 'held' && e.holdUntil && e.holdUntil <= now
+    ? { ...e, state: 'released' as const, reason: 'Hold expired after 7 days without a finding' }
+    : e));
+}

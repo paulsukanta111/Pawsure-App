@@ -35,7 +35,7 @@
     "web": "expo start --web",
     "export:web": "expo export --platform web",
     "typecheck": "tsc --noEmit",
-    "build:prototype": "EXPO_PUBLIC_AUTH_MODE=local EXPO_PUBLIC_INLINE_FONTS=1 expo export --platform web --output-dir dist-prototype --clear && python3 -I scripts/assemble-prototype.py dist-prototype ../../node_modules/@expo-google-fonts dist-prototype/pawsure-prototype.html"
+    "build:prototype": "EXPO_PUBLIC_AUTH_MODE=local EXPO_PUBLIC_INLINE_FONTS=1 expo export --platform web --output-dir dist-prototype --clear && python3 -I scripts/assemble-prototype.py dist-prototype ../../node_modules/@expo-google-fonts dist-prototype/pawsure-prototype-v2.html \"Pawsure Prototype v2\""
   },
   "private": true
 }

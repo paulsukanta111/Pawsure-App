@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import { Button, Card, ListItem, Logo, Screen, SectionHeader, Text } from '../../design';
 import { useAuth } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
+import { CONSENT_TEXT } from '../../proto/HelperInvite';
 import { useProto } from '../../proto/store';
 
 interface Profile { name: string; household?: { name: string; society: string | null; tower: string | null } }
 
 export default function Me() {
   const auth = useAuth();
-  const { state, dispatch, pointsThisMonth } = useProto();
+  const { state, dispatch, wallet } = useProto();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function Me() {
 
   return (
     <Screen header={<Logo size={32} tagline />}>
-      <Text variant="h3">{profile?.name ?? 'Loading…'}</Text>
+      <Text variant="h3">{state.profile.name || profile?.name || 'Loading…'}</Text>
       {profile?.household ? (
         <Text variant="caption" tone="muted" style={{ marginTop: -12 }}>
           {profile.household.name} · {[profile.household.society, profile.household.tower].filter(Boolean).join(', ')}
@@ -45,8 +46,11 @@ export default function Me() {
 
       <SectionHeader title="Care" />
       <ListItem icon="care" title="Care circle" subtitle={`${state.helper.name}, ${state.backup.name} (backup)`} onPress={() => router.push('/care-circle')} />
+      <ListItem icon="community" title={`${state.helper.name}: invite and consent`} subtitle={CONSENT_TEXT[state.helper.consent].title} onPress={() => router.push('/helper-invite')} />
+      <ListItem icon="stats" title={`${state.helper.name}'s check-ins`} subtitle="Performance and history" onPress={() => router.push('/helper-history')} />
       <ListItem icon="key" title="Food-box code card" subtitle="Print this month's card" onPress={() => router.push('/code-card')} />
-      <ListItem icon="paw" title="Wallet and health" subtitle={`${pointsThisMonth} points earned by ${state.helper.name} this month`} onPress={() => router.push('/wallet')} />
+      <ListItem icon="paw" title="Rewards" subtitle={`${wallet.spendable} spendable · ${wallet.held} on hold`} onPress={() => router.push('/rewards')} />
+      <ListItem icon="health" title="Health" subtitle="Reminders, history and vet" onPress={() => router.push('/health')} />
       <ListItem icon="alert" title="Emergency and incidents" onPress={() => router.push('/emergency')} />
 
       <SectionHeader title="Friends" />
@@ -62,7 +66,11 @@ export default function Me() {
       <SectionHeader title="Privacy and your data" />
       <ListItem icon="shield" title="See or correct my data" subtitle="We reply within 7 days" onPress={() => {}} />
       <ListItem icon="settings" title="Withdraw consent or delete" onPress={() => {}} />
+      <SectionHeader title="About this prototype" />
       <ListItem icon="leaf" title="Style guide" subtitle="Design tokens and components" onPress={() => router.push('/styleguide')} />
+      <ListItem icon="settings" title="Pilot settings" subtitle="Rewards experiment and feature switches" onPress={() => router.push('/pilot')} />
+      <ListItem icon="check" title="What this prototype covers" subtitle="PRD requirements shown and not yet shown" onPress={() => router.push('/coverage')} />
+      <Button label="Replay onboarding" kind="outlined" onPress={() => dispatch({ type: 'replay_onboarding' })} full />
 
       <Button label="Reset demo day" kind="outlined" onPress={() => dispatch({ type: 'reset' })} full />
       <Button label="Sign out" kind="outlined" onPress={auth.signOut} full />

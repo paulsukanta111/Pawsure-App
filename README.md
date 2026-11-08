@@ -43,7 +43,9 @@ npm run mobile
 
 ## Shareable prototype
 
-Live: https://claude.ai/artifact/3zUBcJEdAyzaaXh5VZFLA7 (private until shared from its Share menu).
+v2 (this branch, `claude/hifi-v2`): https://claude.ai/artifact/U15qxCc74YpqjCSpafYLXV
+v1 (branch `claude/p0-foundation`): https://claude.ai/artifact/3zUBcJEdAyzaaXh5VZFLA7
+Both are private until shared from their Share menu. Coverage and test results: `docs/prototype-v2-coverage.md`.
 
 Rebuild the single-file page (local sign-in, fonts embedded, nothing fetched from the network):
 

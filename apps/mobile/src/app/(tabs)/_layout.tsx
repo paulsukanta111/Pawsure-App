@@ -13,6 +13,8 @@ export default function TabsLayout() {
         tabBarActiveTintColor: color.text.primary,
         tabBarInactiveTintColor: color.text.muted,
         tabBarLabelStyle: { fontFamily: type.label.fontFamily, fontSize: 12 },
+        // Labels under icons at every width, so the active pill never overlaps the label on tablets.
+        tabBarLabelPosition: 'below-icon',
         tabBarStyle: { height: 68, paddingTop: 6, paddingBottom: 8, backgroundColor: color.bg.card, borderTopColor: color.border.subtle },
         tabBarIcon: ({ focused }) => (
           <View style={{ paddingHorizontal: 14, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: focused ? color.action.primary : 'transparent' }}>

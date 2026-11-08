@@ -7,7 +7,8 @@ import { View } from 'react-native';
 import { Icon } from '../design/Icon';
 import { color, type } from '../design/theme';
 import { AuthProvider, useAuth } from '../lib/auth';
-import { PrototypeProvider } from '../proto/store';
+import { PrototypeProvider, useProto } from '../proto/store';
+import { ToastProvider } from '../design/states';
 
 const INLINE_FONTS = process.env.EXPO_PUBLIC_INLINE_FONTS === '1';
 
@@ -19,8 +20,10 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <PrototypeProvider>
-        <StatusBar style="dark" />
-        <Routes />
+        <ToastProvider>
+          <StatusBar style="dark" />
+          <Routes />
+        </ToastProvider>
       </PrototypeProvider>
     </AuthProvider>
   );
@@ -28,6 +31,8 @@ export default function RootLayout() {
 
 function Routes() {
   const { signedIn, restoring } = useAuth();
+  const { state } = useProto();
+  const inApp = signedIn && state.onboarded;
   if (restoring) return <View style={{ flex: 1, backgroundColor: color.bg.canvas }} />;
   return (
     <Stack
@@ -43,8 +48,17 @@ function Routes() {
         headerBackAccessibilityLabel: 'Back',
       }}
     >
-      <Stack.Protected guard={signedIn} redirectTo="/welcome">
+      <Stack.Protected guard={inApp} redirectTo={signedIn ? '/onboarding/profile' : '/welcome'}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="helper-invite" options={{ title: 'Invite your helper' }} />
+        <Stack.Screen name="helper-history" options={{ title: "Sunita's check-ins" }} />
+        <Stack.Screen name="rewards" options={{ title: 'Rewards' }} />
+        <Stack.Screen name="health" options={{ title: 'Health' }} />
+        <Stack.Screen name="pilot" options={{ title: 'Pilot settings' }} />
+        <Stack.Screen name="coverage" options={{ title: 'What this prototype covers' }} />
+        <Stack.Screen name="add-pet" options={{ title: 'Add a pet' }} />
+        <Stack.Screen name="later/certificate" options={{ title: 'Certificate (P1 preview)' }} />
+        <Stack.Screen name="later/carer" options={{ title: 'Carer profile (P2 preview)' }} />
         <Stack.Screen name="return-check" options={{ title: 'Return check', presentation: 'modal' }} />
         <Stack.Screen name="styleguide" options={{ title: 'Style guide' }} />
         <Stack.Screen name="prototype" options={{ title: 'All screens' }} />
@@ -53,13 +67,9 @@ function Routes() {
         <Stack.Screen name="missed/[id]" options={{ title: 'Missed check-in' }} />
         <Stack.Screen name="day-report" options={{ title: 'Day report' }} />
         <Stack.Screen name="emergency" options={{ title: 'Emergency' }} />
-        <Stack.Screen name="wallet" options={{ title: 'Wallet and health' }} />
         <Stack.Screen name="code-card" options={{ title: 'Food-box code card' }} />
         <Stack.Screen name="pet-edit" options={{ title: 'Pet profile' }} />
-        <Stack.Screen name="routine" options={{ title: 'Routine' }} />
         <Stack.Screen name="care-circle" options={{ title: 'Care circle' }} />
-        <Stack.Screen name="helper" options={{ title: "Sunita's WhatsApp (simulated)" }} />
-        <Stack.Screen name="basic-phone" options={{ title: 'Basic phone (simulated)' }} />
         <Stack.Screen name="friend-request" options={{ title: "Friend's WhatsApp (simulated)" }} />
         <Stack.Screen name="friend/[id]" options={{ title: 'Friend' }} />
         <Stack.Screen name="friend-settings" options={{ title: 'My help settings' }} />
@@ -77,6 +87,22 @@ function Routes() {
       </Stack.Protected>
       {/* Opened from a WhatsApp link by the backup, who has no account (PS-102). */}
       <Stack.Screen name="look-in" options={{ title: 'Pawsure look-in' }} />
+      {/* Used both during onboarding and in the app. */}
+      <Stack.Protected guard={signedIn} redirectTo="/welcome">
+        <Stack.Screen name="routine" options={{ title: 'Routine' }} />
+        <Stack.Screen name="helper" options={{ title: "Helper's WhatsApp (simulated)" }} />
+        <Stack.Screen name="basic-phone" options={{ title: 'Basic phone (simulated)' }} />
+      </Stack.Protected>
+      {/* Signed in, still setting up: registration, consent, pet, routine, care circle. */}
+      <Stack.Protected guard={signedIn && !state.onboarded} redirectTo={signedIn ? '/' : '/welcome'}>
+        <Stack.Screen name="onboarding/profile" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding/consent" options={{ title: '' }} />
+        <Stack.Screen name="onboarding/pet" options={{ title: '' }} />
+        <Stack.Screen name="onboarding/pet-care" options={{ title: '' }} />
+        <Stack.Screen name="onboarding/routine" options={{ title: '' }} />
+        <Stack.Screen name="onboarding/circle" options={{ title: '' }} />
+        <Stack.Screen name="onboarding/invite-helper" options={{ title: '' }} />
+      </Stack.Protected>
       <Stack.Protected guard={!signedIn} redirectTo="/">
         <Stack.Screen name="welcome" options={{ headerShown: false }} />
         <Stack.Screen name="sign-in" options={{ title: '' }} />

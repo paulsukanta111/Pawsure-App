@@ -3,10 +3,11 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import {
-  Button, Card, Checkbox, Chip, color, confidenceStyle, Icon, IconButton, ListItem, NoticeBanner, PetChip, radius, Screen,
+  Button, Card, Checkbox, Chip, color, confidenceStyle, EmptyState, Icon, IconButton, ListItem, NoticeBanner, PetChip, radius, Screen,
   SectionHeader, space, StatusPill, Text, visitLabel,
 } from '../../design';
 import { DemoClock } from '../../proto/DemoClock';
+import { CONSENT_TEXT } from '../../proto/HelperInvite';
 import { TASK_ICON } from '../../proto/labels';
 import { fmt, useProto } from '../../proto/store';
 
@@ -21,6 +22,7 @@ export default function Today() {
   const { now, state, dispatch, evaluations, activeTasks, alerts, day } = useProto();
   const [checked, setChecked] = useState<string[]>([]);
   const [left, setLeft] = useState(false);
+  const [petIdx, setPetIdx] = useState(0);
   const { helper, pet } = state;
   const trusted = helper.mode === 'trusted';
   const openAlerts = alerts.filter((a) => !a.acknowledged);
@@ -34,7 +36,7 @@ export default function Today() {
         <View style={st.header}>
           <View>
             <Text variant="caption" tone="muted">{greeting(now)},</Text>
-            <Text variant="h2">Neha!</Text>
+            <Text variant="h2">{state.profile.name}!</Text>
           </View>
           <View>
             <IconButton name="reminder" label={`Alerts, ${openAlerts.length} new`} onPress={() => router.push('/notifications')} />
@@ -63,10 +65,24 @@ export default function Today() {
       ))}
 
       <View style={st.row}>
-        <PetChip name={pet.name} detail={`${pet.speciesLabel} · ${pet.age}`} species={pet.species} selected onPress={() => router.push('/pet')} />
-        <IconButton name="plus" label="Add a pet" onPress={() => router.push('/pet-edit')} />
+        <PetChip name={pet.name} detail={`${pet.speciesLabel} · ${pet.age}`} species={pet.species} selected={petIdx === 0} onPress={() => setPetIdx(0)} />
+        {state.extraPets.map((p, i) => <PetChip key={p.name} name={p.name} detail={p.species === 'cat' ? 'Cat' : 'Dog'} species={p.species} selected={petIdx === i + 1} onPress={() => setPetIdx(i + 1)} />)}
+        <IconButton name="plus" label="Add a pet" onPress={() => router.push('/add-pet')} />
       </View>
 
+      {petIdx > 0 ? (
+        <EmptyState scene="empty" title={`No routine for ${state.extraPets[petIdx - 1]!.name} yet`} body="Add feeding, walks or medicine and your helper gets a prompt for each." action="Add a task" onAction={() => router.push('/routine')} />
+      ) : null}
+
+      {petIdx === 0 && helper.mode === 'tracked' && helper.consent !== 'given' ? (
+        <NoticeBanner icon="community" tone={helper.consent === 'declined' || helper.consent === 'withdrawn' ? 'alert' : 'brand'}
+          title={CONSENT_TEXT[helper.consent].title} body={CONSENT_TEXT[helper.consent].body} />
+      ) : null}
+      {petIdx === 0 && helper.mode === 'tracked' && helper.consent !== 'given' ? (
+        <Button label={helper.consent === 'not_invited' ? `Invite ${helper.name}` : `${helper.name}: invite and consent`} kind="secondary" icon="community" onPress={() => router.push('/helper-invite')} full />
+      ) : null}
+
+      {petIdx === 0 ? (<>
       <Card tone="brand">
         <Text variant="h3">Who's caring today?</Text>
         <View style={st.row}>
@@ -129,15 +145,18 @@ export default function Today() {
         );
       })}
 
-      <SectionHeader title="Upcoming health" action="See all" onAction={() => router.push('/wallet')} />
+      <SectionHeader title="Upcoming health" action="See all" onAction={() => router.push('/health')} />
       {state.health.filter((h) => !h.done).slice(0, 2).map((h) => {
         const days = Math.round((h.dueOn.getTime() - now.getTime()) / 86_400_000);
         return (
           <ListItem key={h.id} icon={h.kind === 'vaccine' ? 'vaccine' : h.kind === 'deworming' ? 'medication' : 'calendar'} title={h.title} subtitle={h.detail}
-            meta={days <= 0 ? 'Today' : `Due in ${days} days`} metaTone={days <= 7 ? 'alert' : 'muted'} onPress={() => router.push('/wallet')} />
+            meta={days <= 0 ? 'Today' : `Due in ${days} days`} metaTone={days <= 7 ? 'alert' : 'muted'} onPress={() => router.push('/health')} />
         );
       })}
 
+      </>) : null}
+
+      {petIdx === 0 ? (
       <Card tone={day.outcome === 'covered' ? 'calm' : 'plain'}>
         <Text variant="subheading">
           {day.outcome === 'covered' ? 'Covered care day' : day.outcome === 'unknown' ? 'Not marked yet' : 'Not covered yet'}
@@ -160,6 +179,7 @@ export default function Today() {
           </>
         )}
       </Card>
+      ) : null}
     </Screen>
   );
 }

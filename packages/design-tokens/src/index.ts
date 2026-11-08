@@ -61,6 +61,20 @@ export const color = {
   },
 } as const;
 
+/**
+ * Illustration colours (Bruno mascot). Decorative only: never used for text or
+ * controls, so they sit outside the contrast-tested semantic tokens.
+ */
+export const art = {
+  fur: '#D9A26B',
+  furDark: '#9A6438',
+  muzzle: '#F6E3C4',
+  line: palette.charcoal,
+  bandana: palette.goldenYellow,
+  blush: '#F2B8A0',
+  sky: '#FFF6D6',
+} as const;
+
 /** Spacing scale (px): 4 8 12 16 24 32. */
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
 

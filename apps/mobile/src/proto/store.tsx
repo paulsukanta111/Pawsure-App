@@ -7,8 +7,9 @@
  * It will be replaced by Supabase reads/writes screen by screen.
  */
 import {
-  addMinutes, computePetDay, evaluateTask, expectedCodeFor, generateCodeCard, istMonthKey, newSearch, planLadder,
-  reduceFriendSearch, REWARD_POLICY, SEVERITY_OF, shouldRun,
+  accruePoints, addMinutes, autoReleaseHolds, computePetDay, evaluateTask, expectedCodeFor, generateCodeCard, istMonthKey,
+  newSearch, parseFriendReply, planLadder, redeemCoupon, reduceFriendSearch, resolveHold, REWARD_POLICY, SEVERITY_OF, shouldRun,
+  walletSummary, type LedgerEntry, type WalletSummary,
   type CheckInSignal, type CodeCard, type CoverRequest, type FriendEvent, type FriendSearch, type IncidentCategory,
   type LadderStepKind, type PetDayResult, type ReturnCheckAnswer, type Severity, type TaskEvaluation, type TaskType,
 } from '@pawsure/domain';
@@ -17,6 +18,21 @@ import { friends as seedFriends, pet as seedPet, today } from '../demo/data';
 
 export type Lang = 'en' | 'hi' | 'mr';
 export type HelperMethod = 'whatsapp_photo' | 'whatsapp_voice' | 'missed_call_code';
+export type HelperConsent = 'not_invited' | 'pending' | 'given' | 'declined' | 'withdrawn';
+
+export interface AskMessage {
+  id: string;
+  from: 'owner' | 'pawsure';
+  text: string;
+  at: Date;
+  /** What this message is, so the chat can render the right card. */
+  kind: 'text' | 'parse' | 'matches' | 'preview' | 'status' | 'reply' | 'no_match';
+}
+
+export interface Dispute { helperText?: string; respondedAt?: Date; decision?: 'release' | 'reverse'; reason?: string; decidedAt?: Date }
+
+export const HELPER_ID = 'sunita';
+export const HOUSEHOLD_ID = 'demo';
 
 export interface ProtoTask {
   id: string;
@@ -51,7 +67,21 @@ export interface ProtoState {
   acks: Record<string, Date>;
   resolved: Record<string, Date>;
   incidents: Incident[];
-  helper: { name: string; phone: string; consent: 'pending' | 'given' | 'declined'; method: HelperMethod; language: Lang; mode: 'tracked' | 'trusted'; unavailableToday: boolean };
+  helper: { name: string; phone: string; consent: HelperConsent; method: HelperMethod; language: Lang; mode: 'tracked' | 'trusted'; unavailableToday: boolean };
+  /** v2: onboarding and profile. */
+  onboarded: boolean;
+  profile: { name: string; photo: boolean; language: Lang };
+  coOwners: { name: string; phone: string; status: 'invited' | 'joined' }[];
+  extraPets: { name: string; species: 'dog' | 'cat' }[];
+  /** v2: rewards ledger, disputes, redemptions. */
+  ledgerSeed: LedgerEntry[];
+  redemptions: LedgerEntry[];
+  disputes: Record<string, Dispute>;
+  /** v2: Friend Finder conversation and friends. */
+  friendLanguage: Record<string, Lang>;
+  invitedFriends: { name: string; phone: string; language: Lang; at: Date }[];
+  askLog: AskMessage[];
+  friendReplies: { friendId: string; text: string; interpretation: string; at: Date }[];
   backup: { name: string; phone: string };
   trustedCovered: boolean | null;
   gateApp: boolean;
@@ -92,12 +122,26 @@ type Action =
   | { type: 'start_cover'; request: CoverRequest & { summary: string } }
   | { type: 'friend'; event: FriendEvent }
   | { type: 'clear_cover' }
-  | { type: 'look_in_opened' };
+  | { type: 'look_in_opened' }
+  | { type: 'finish_onboarding' }
+  | { type: 'replay_onboarding' }
+  | { type: 'profile'; patch: Partial<ProtoState['profile']> }
+  | { type: 'invite_co_owner'; name: string; phone: string }
+  | { type: 'add_pet'; name: string; species: 'dog' | 'cat' }
+  | { type: 'dispute_response'; taskId: string; text: string }
+  | { type: 'dispute_decide'; taskId: string; decision: 'release' | 'reverse'; reason: string }
+  | { type: 'redeem' }
+  | { type: 'invite_friend'; name: string; phone: string; language: Lang }
+  | { type: 'ask'; from: AskMessage['from']; text: string; kind?: AskMessage['kind'] }
+  | { type: 'ask_reset' }
+  | { type: 'friend_text_reply'; friendId: string; text: string };
 
 const rand = () => Math.floor(Math.random() * 10_000);
 
 function initialState(): ProtoState {
-  const now = today(15, 45);
+  const onboarded = readOnboarded();
+  // A fresh demo starts in the morning so onboarding happens before the day plays out.
+  const now = onboarded ? today(15, 45) : today(8, 30);
   return {
     demoTime: now,
     pet: { ...seedPet },
@@ -119,7 +163,7 @@ function initialState(): ProtoState {
     acks: {},
     resolved: {},
     incidents: [],
-    helper: { name: 'Sunita', phone: '+91 98200 33333', consent: 'given', method: 'whatsapp_photo', language: 'mr', mode: 'tracked', unavailableToday: false },
+    helper: { name: 'Sunita', phone: '+91 98200 33333', consent: onboarded ? 'given' : 'not_invited', method: 'whatsapp_photo', language: 'mr', mode: 'tracked', unavailableToday: false },
     backup: { name: 'Amit', phone: '+91 98200 11111' },
     trustedCovered: null,
     gateApp: false,
@@ -139,7 +183,44 @@ function initialState(): ProtoState {
     ownerPrivacy: { societyOnly: true, nearbyFallback: false },
     lookInOpens: [],
     seq: 100,
+    onboarded,
+    profile: { name: 'Neha', photo: false, language: 'en' },
+    coOwners: [],
+    extraPets: [],
+    ledgerSeed: seedLedger(now),
+    redemptions: [],
+    disputes: {},
+    friendLanguage: { 'f-priya': 'en', 'f-arjun': 'hi', 'f-meera': 'mr', 'f-kabir': 'en' },
+    invitedFriends: [],
+    askLog: [],
+    friendReplies: [],
   };
+}
+
+const ONBOARD_KEY = 'pawsure.prototype.onboarded';
+function readOnboarded(): boolean {
+  try { return globalThis.localStorage?.getItem(ONBOARD_KEY) === '1'; } catch { return false; }
+}
+function writeOnboarded(v: boolean) {
+  try { if (v) globalThis.localStorage?.setItem(ONBOARD_KEY, '1'); else globalThis.localStorage?.removeItem(ONBOARD_KEY); } catch { /* storage blocked */ }
+}
+
+/** Sunita's earlier points: two households, several months, one coupon already redeemed. */
+function seedLedger(now: Date): LedgerEntry[] {
+  const out: LedgerEntry[] = [];
+  const add = (household: string, daysAgo: number, count: number) => {
+    for (let i = 0; i < count; i++) {
+      const at = addMinutes(now, -(daysAgo * 24 * 60) - i * 7);
+      out.push({ id: `seed-${household}-${daysAgo}-${i}`, helperId: HELPER_ID, householdId: household, taskId: `seed-${household}-${daysAgo}-${i}`, points: 5, state: 'earned', reason: 'confirmed_or_likely_task', at });
+    }
+  };
+  for (let d = 1; d <= 6; d++) add(HOUSEHOLD_ID, d, 2);       // 60 earlier this month
+  for (let d = 1; d <= 8; d++) add('kapoor', d, 2);            // 80 from the Kapoor home
+  add(HOUSEHOLD_ID, 35, 25); add('kapoor', 35, 18);            // last month (capped 125 here)
+  add(HOUSEHOLD_ID, 65, 25); add('kapoor', 65, 20);
+  add(HOUSEHOLD_ID, 172, 8);                                    // expires within 30 days
+  out.push({ id: 'seed-redeem', helperId: HELPER_ID, householdId: '*', taskId: 'coupon:seed', points: 500, state: 'redeemed', reason: `₹${REWARD_POLICY.couponValueRupees} coupon`, at: addMinutes(now, -40 * 24 * 60) });
+  return out;
 }
 
 /** The lunch photo above carries today's code once the card exists. */
@@ -158,6 +239,9 @@ function reducer(s: ProtoState, a: Action): ProtoState {
     case 'advance':
       return { ...s, demoTime: addMinutes(now, a.minutes) };
     case 'reset':
+      return seedLunchCode(initialState());
+    case 'replay_onboarding':
+      writeOnboarded(false);
       return seedLunchCode(initialState());
     case 'patch':
       return { ...s, ...a.patch };
@@ -216,6 +300,44 @@ function reducer(s: ProtoState, a: Action): ProtoState {
       return { ...s, friendSearch: null, coverRequest: null };
     case 'look_in_opened':
       return { ...s, lookInOpens: [...s.lookInOpens, now] };
+    case 'finish_onboarding':
+      writeOnboarded(true);
+      return { ...s, onboarded: true };
+    case 'profile':
+      return { ...s, profile: { ...s.profile, ...a.patch } };
+    case 'invite_co_owner':
+      return { ...s, coOwners: [...s.coOwners, { name: a.name, phone: a.phone, status: 'invited' }] };
+    case 'add_pet':
+      return { ...s, extraPets: [...s.extraPets, { name: a.name, species: a.species }] };
+    case 'dispute_response':
+      return { ...s, disputes: { ...s.disputes, [a.taskId]: { ...s.disputes[a.taskId], helperText: a.text, respondedAt: now } } };
+    case 'dispute_decide':
+      return { ...s, disputes: { ...s.disputes, [a.taskId]: { ...s.disputes[a.taskId], decision: a.decision, reason: a.reason, decidedAt: now } } };
+    case 'redeem': {
+      const entry = redeemCoupon(buildLedger(s, now), HELPER_ID, now, id('redeem'));
+      return entry ? { ...s, seq: s.seq + 1, redemptions: [...s.redemptions, entry] } : s;
+    }
+    case 'invite_friend':
+      return { ...s, invitedFriends: [...s.invitedFriends, { name: a.name, phone: a.phone, language: a.language, at: now }] };
+    case 'ask':
+      return { ...s, seq: s.seq + 1, askLog: [...s.askLog, { id: id('ask'), from: a.from, text: a.text, at: now, kind: a.kind ?? 'text' }] };
+    case 'ask_reset':
+      return { ...s, askLog: [], friendSearch: null, coverRequest: null, friendReplies: [] };
+    case 'friend_text_reply': {
+      if (!s.friendSearch) return s;
+      const parsed = parseFriendReply(a.text, s.friendSearch.taskStart);
+      const replies = [...s.friendReplies, { friendId: a.friendId, text: a.text, interpretation: parsed.interpretation, at: now }];
+      if (parsed.intent === 'unclear') return { ...s, friendReplies: replies };
+      try {
+        const next = reduceFriendSearch(s.friendSearch, {
+          type: 'friend_reply', at: now, messageId: `${a.friendId}-${now.getTime()}-${replies.length}`, friendId: a.friendId,
+          response: parsed.intent, proposedTime: parsed.proposedTime,
+        }).state;
+        return { ...s, friendReplies: replies, friendSearch: next };
+      } catch {
+        return { ...s, friendReplies: replies };
+      }
+    }
   }
 }
 
@@ -234,6 +356,27 @@ export interface AlertItem {
   acknowledged: boolean;
 }
 
+/** Ledger = earlier history + today's tasks through the PS-126 rules + disputes + redemptions. */
+export function buildLedger(s: ProtoState, now: Date, evaluations?: Record<string, TaskEvaluation>): LedgerEntry[] {
+  let ledger: LedgerEntry[] = [...s.ledgerSeed];
+  if (s.helper.mode === 'tracked' && s.helper.consent === 'given' && evaluations) {
+    for (const t of s.tasks.filter((x) => !x.cancelled)) {
+      const ev = evaluations[t.id];
+      if (!ev) continue;
+      const lastSig = (s.signals[t.id] ?? []).filter((x) => x.at <= now).at(-1);
+      const entry = accruePoints({
+        helperId: HELPER_ID, householdId: HOUSEHOLD_ID, taskId: t.id, at: lastSig?.at ?? now, outcome: ev.points,
+        rewardsEnabled: s.rewardsEnabled, existing: ledger,
+      }, `today-${t.id}`);
+      if (!entry) continue;
+      const d = s.disputes[t.id];
+      ledger.push(d?.decision && d.reason ? resolveHold(entry, d.decision, d.decidedAt ?? now, d.reason) : entry);
+    }
+  }
+  ledger = autoReleaseHolds(ledger, now);
+  return [...ledger, ...s.redemptions];
+}
+
 export interface Derived {
   now: Date;
   code: string | undefined;
@@ -242,6 +385,8 @@ export interface Derived {
   alerts: AlertItem[];
   day: PetDayResult;
   pointsThisMonth: number;
+  ledger: LedgerEntry[];
+  wallet: WalletSummary;
   verifiedVisits: number;
   streakDays: number;
 }
@@ -252,8 +397,10 @@ function derive(s: ProtoState): Derived {
   const activeTasks = s.tasks.filter((t) => !t.cancelled);
   const priorHashes = new Set<string>();
   const evaluations: Record<string, TaskEvaluation> = {};
+  // PS-021: nothing from the helper counts until she has consented.
+  const consentOk = s.helper.consent === 'given';
   for (const t of [...s.tasks].sort((a, b) => a.dueAt.getTime() - b.dueAt.getTime())) {
-    const sigs = (s.signals[t.id] ?? []).filter((x) => x.at <= now);
+    const sigs = consentOk ? (s.signals[t.id] ?? []).filter((x) => x.at <= now) : [];
     evaluations[t.id] = evaluateTask({
       dueAt: t.dueAt, now, signals: sigs, expectedCode: expectedCodeFor(s.codeCards, t.dueAt),
       priorImageHashes: new Set(priorHashes), visitTaskTypes: [t.type], returnCheck: s.returnChecks[t.id],
@@ -300,14 +447,18 @@ function derive(s: ProtoState): Derived {
       })),
     });
 
-  const earned = s.helper.mode === 'tracked' && s.rewardsEnabled
-    ? activeTasks.filter((t) => evaluations[t.id]!.points === 'earn').length
-    : 0;
+  const ledger = buildLedger(s, now, evaluations);
+  const month = istMonthKey(now);
+  const pointsThisMonth = ledger
+    .filter((e) => e.householdId === HOUSEHOLD_ID && istMonthKey(e.at) === month && (e.state === 'earned' || e.state === 'released'))
+    .reduce((sum, e) => sum + e.points, 0);
+  const earnedToday = ledger.filter((e) => e.id.startsWith('today-') && e.state === 'earned').length;
   return {
     now, code, evaluations, activeTasks, alerts, day,
-    // Sample baseline earlier this month (60) plus today's earned points, capped per PS-126.
-    pointsThisMonth: Math.min(60 + earned * REWARD_POLICY.pointsPerTask, REWARD_POLICY.monthlyCapPerHousehold),
-    verifiedVisits: 41 + earned,
+    pointsThisMonth,
+    ledger,
+    wallet: walletSummary(ledger, HELPER_ID, now),
+    verifiedVisits: 41 + earnedToday,
     streakDays: 6,
   };
 }

@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import {
-  Button, Card, Chip, IconTile, IllustrationSlot, KeyValue, LineChart, ListItem, PetAvatar, Screen, SectionHeader, SegmentedTabs, space, Text,
+  Button, Card, Chip, IconTile, KeyValue, Scene, LineChart, ListItem, PetAvatar, Screen, SectionHeader, SegmentedTabs, space, Text,
 } from '../../design';
 import { TASK_ICON } from '../../proto/labels';
 import { fmt, useProto } from '../../proto/store';
@@ -17,7 +17,7 @@ export default function Pet() {
   const pet = state.pet;
   return (
     <Screen>
-      <IllustrationSlot name={`${pet.name} portrait`} height={160} />
+      <Scene name="home" height={180} label={`${pet.name} at home`} />
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
         <PetAvatar species={pet.species} size={56} />
         <View style={{ flex: 1 }}>
@@ -53,11 +53,11 @@ export default function Pet() {
           <ListItem icon="food" title="Food" subtitle={pet.food} meta="Owner-provided" />
           <ListItem icon="activity" title="Walks this week" subtitle="5 of 7 afternoon walks with evidence" meta="Good" metaTone="success" />
           <ListItem icon="water" title="Water" subtitle="Bowl refilled at lunch daily" meta="Good" metaTone="success" />
-          <SectionHeader title="Reminders" action="All" onAction={() => router.push('/wallet')} />
+          <SectionHeader title="Reminders" action="All" onAction={() => router.push('/health')} />
           {state.health.map((h) => {
             const d = Math.round((h.dueOn.getTime() - now.getTime()) / 86_400_000);
             return <ListItem key={h.id} icon={h.kind === 'vaccine' ? 'vaccine' : h.kind === 'deworming' ? 'medication' : 'calendar'} title={h.title} subtitle={h.detail}
-              meta={h.done ? 'Done' : d <= 0 ? 'Today' : `Due in ${d} days`} metaTone={h.done ? 'success' : d <= 7 ? 'alert' : 'muted'} onPress={() => router.push('/wallet')} />;
+              meta={h.done ? 'Done' : d <= 0 ? 'Today' : `Due in ${d} days`} metaTone={h.done ? 'success' : d <= 7 ? 'alert' : 'muted'} onPress={() => router.push('/health')} />;
           })}
         </>
       ) : null}

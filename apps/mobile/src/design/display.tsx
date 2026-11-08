@@ -167,7 +167,7 @@ export function IllustrationSlot({ name, height = 160 }: { name: string; height?
   return (
     <View style={[s.illustration, { height }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Icon name="paw" size={40} tint={color.text.muted} />
-      <Text variant="small" tone="muted">Illustration: {name}</Text>
+      <Text variant="small" tone="muted">{name} (simulated)</Text>
     </View>
   );
 }

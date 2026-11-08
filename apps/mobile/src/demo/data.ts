@@ -83,12 +83,13 @@ export const tasks: DemoTask[] = [
   },
 ];
 
-const always = [{ start: today(0, 0), end: today(23, 59) }];
+const tomorrow = (h: number, min = 0) => ist(y, m, d + 1, h, min);
+const always = [{ start: today(0, 0), end: today(23, 59) }, { start: tomorrow(0, 0), end: tomorrow(23, 59) }];
 
 export const friends: FriendCandidate[] = [
   {
     id: 'f-priya', displayName: 'Priya', discoveryOptIn: true, paused: false, blockedWithOwner: false,
-    availability: [{ start: today(15, 0), end: today(20, 0) }],
+    availability: [{ start: today(15, 0), end: today(20, 0) }, { start: tomorrow(11, 0), end: tomorrow(17, 0) }],
     capabilities: new Set(['feeding_water', 'short_walk']), distanceBand: 'same_tower', distanceLabel: 'Same tower',
     keyStatus: 'has_key', openRequests: 0, maxOpenRequests: 2, pastHelps: 3, medianResponseMinutes: 6,
   },
@@ -100,7 +101,7 @@ export const friends: FriendCandidate[] = [
   },
   {
     id: 'f-meera', displayName: 'Meera', discoveryOptIn: true, paused: false, blockedWithOwner: false,
-    availability: always, capabilities: new Set(['feeding_water', 'short_walk', 'medicine']),
+    availability: [{ start: today(0, 0), end: today(23, 59) }, { start: tomorrow(18, 0), end: tomorrow(21, 0) }], capabilities: new Set(['feeding_water', 'short_walk', 'medicine']),
     distanceBand: 'same_society', distanceLabel: 'About 4 min away', keyStatus: 'no_key',
     openRequests: 0, maxOpenRequests: 2,
   },

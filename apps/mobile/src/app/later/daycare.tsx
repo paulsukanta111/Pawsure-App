@@ -18,6 +18,7 @@ export default function DayCare() {
           <View style={{ alignItems: 'flex-end' }}><Text variant="h3">{d.score}/100</Text><Text variant="small">Live score: 70% audit + 30% proof from stays</Text></View>
         </View>
         <Text variant="small">Certificate valid until {d.certificateUntil}. Re-checked quarterly by surprise visit.</Text>
+        <Chip label="View certificate" onPress={() => router.push('/later/certificate')} />
       </Card>
       <SectionHeader title="Score breakdown" />
       <Card>
@@ -42,12 +43,13 @@ export default function DayCare() {
         <KeyValue k="Free-roam / crate hours" v={`${d.freeRoamHours} h / ${d.crateHours} h`} />
         <KeyValue k="Staff to dogs" v={d.staffRatio} />
       </Card>
-      <SectionHeader title="Book a same-day stay" />
+      <SectionHeader title="Booking (preview)" />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
         {['9 am – 1 pm', '9 am – 6 pm', '2 pm – 8 pm'].map((s) => <Chip key={s} label={s} selected={slot === s} onPress={() => setSlot(s)} />)}
       </View>
       <Text variant="small" tone="muted">Free cancellation up to 2 hours before. Refunds go back to your payment method. Multi-day boarding is not offered.</Text>
-      <Button label={`Book ${slot} · ₹${d.price}`} onPress={() => router.push('/later/dropoff')} full />
+      <Button label={`Preview booking ${slot} · ₹${d.price}`} kind="secondary" onPress={() => router.push('/later/dropoff')} full />
+      <Text variant="small" tone="muted">Booking isn't available in this release. This shows how the drop-off would look.</Text>
     </Screen>
   );
 }

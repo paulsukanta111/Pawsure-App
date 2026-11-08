@@ -1,0 +1,25 @@
+const { chromium } = require('playwright');
+const fs = require('fs');
+(async () => {
+  const body = fs.readFileSync(process.argv[2], 'utf8');
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0">${body}</body></html>`;
+  const b = await chromium.launch();
+  const p = await b.newPage({ viewport: { width: 390, height: 2600 } });
+  const PAGE = 'https://artifact.test/w/page';
+  await p.route('**/*', (r) => (r.request().url() === PAGE ? r.fulfill({ status: 200, contentType: 'text/html', body: html }) : r.abort()));
+  await p.addInitScript(() => { localStorage.setItem('pawsure.prototype.signedIn', '1'); localStorage.setItem('pawsure.prototype.onboarded', '1'); });
+  await p.goto(PAGE);
+  const vis = (t) => p.getByText(t).filter({ visible: true }).first();
+  const btn = (n) => p.getByRole('button', { name: n, exact: true }).filter({ visible: true }).last();
+  const lunch = () => p.getByRole('button').filter({ hasText: '1:00 pm · Sunita', visible: true }).first().innerText();
+  await vis('Neha!').waitFor();
+  console.log('before: lunch', (await lunch()).includes('Confirmed') ? 'Confirmed' : 'other');
+  await btn('All screens').click(); await p.getByText('Helper on WhatsApp', { exact: true }).last().click();
+  await btn('थांबवा').click(); await vis('थांबवले').waitFor();
+  await btn("See Neha's Today screen").click(); await vis('She stopped check-ins').waitFor();
+  console.log('after withdraw: banner shown; lunch', (await lunch()).match(/Confirmed|Likely|Missed|Not confirmed/)?.[0], '(evidence no longer counted)');
+  await p.getByRole('button', { name: /invite and consent/ }).filter({ visible: true }).first().click();
+  await vis('Why check-ins?').waitFor();
+  console.log('owner can re-invite:', await btn('Send invite on WhatsApp (simulated)').isVisible());
+  await b.close();
+})().catch((e) => { console.log('FAILED', e.message.split('\n')[0]); process.exit(1); });

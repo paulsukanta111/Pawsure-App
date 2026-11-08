@@ -10,6 +10,9 @@ const TAB_ROUTES = ['/', '/find-cover', '/friends', '/pet', '/me'];
 
 const OWNER: Entry[] = [
   ['O1', 'Welcome and sign-in', '/welcome', 'paw'],
+  ['D', 'Invite helper and consent status', '/helper-invite', 'community'],
+  ['D', "Helper's check-ins and performance", '/helper-history', 'stats'],
+  ['—', 'Add a pet', '/add-pet', 'cat'],
   ['O2', 'Pet profile', '/pet-edit', 'dog'],
   ['O3', 'Routine and alone window', '/routine', 'clock'],
   ['O4', 'Care circle', '/care-circle', 'care'],
@@ -19,7 +22,8 @@ const OWNER: Entry[] = [
   ['O12', 'Return check', '/return-check', 'smile'],
   ['O13', 'Day report', '/day-report', 'stats'],
   ['O14', 'Emergency and incidents', '/emergency', 'alert'],
-  ['O15', 'Wallet and health', '/wallet', 'health'],
+  ['O15', 'Rewards wallet', '/rewards', 'paw'],
+  ['O15', 'Health calendar and history', '/health', 'health'],
   ['PS-109', 'Food-box code card', '/code-card', 'key'],
   ['PS-102', "Backup's look-in link", '/look-in?task=t-walk', 'friends'],
   ['—', 'Alerts', '/notifications', 'reminder'],
@@ -45,10 +49,35 @@ const P1: Entry[] = [
   ['P2', 'Pickup handover', '/later/dc-handover', 'check'],
   ['P3', 'Staff show-me reply', '/later/dc-showme', 'search'],
   ['P4', 'Private audit result', '/later/dc-audit', 'shield'],
+  ['P1', 'Certificate and live score', '/later/certificate', 'check'],
 ];
 const P2: Entry[] = [
   ['P5 / O8', 'Carer levels and cards', '/later/carers', 'shield'],
+  ['P2', 'Carer profile and ID status', '/later/carer', 'profile'],
   ['P6', 'Carer visit', '/later/carer-visit', 'activity'],
+];
+
+const SCENARIOS = [
+  'Onboarding: Me → Replay onboarding, then sign in and go through the 6 steps.',
+  'Add a pet: Today → + → Add a pet (Mochi). Today shows an empty routine state for Mochi.',
+  'Routine: Pet → Routine → Edit routine → Add a task. Watch the alone-window warning.',
+  'Invite helper: Me → Sunita: invite and consent → Send invite.',
+  'Helper consent: open her phone → choose language → Yes → pick a method.',
+  'Photo check-in: her phone at 3:45 → Photo with code. Walk turns Likely.',
+  'Voice-note check-in: set method Voice note, then send a voice note.',
+  'Missed call + code: Basic phone → arrival call → key today\'s code → leaving call.',
+  'Visit but task not done: Basic phone calls only → task shows Not confirmed "visit only".',
+  'Missed alert: jump to 4:45 (walk) or 7:30 (toilet pad) with no evidence.',
+  'Return check: Today → Return check, answer the five taps.',
+  'Dispute: task → Flag a mismatch → her phone → reply → you release or keep the points.',
+  'Trusted helper mode: Today → Trusted helper mode → mark the day Covered.',
+  'Ask Pawsure: Find cover → example request → confirm → approve.',
+  "Friend accepts: open Priya's phone → Yes → Confirm Priya.",
+  'Friend rejects: reply "Sorry, busy" on a friend\'s phone.',
+  'No friends available: ask for medicine at 9 am tomorrow, or walk at 7 pm.',
+  'Emergency: her phone → Report a problem → Hurt; or Me → Emergency.',
+  'Day report: Today → Day report.',
+  'Rewards: Me → Rewards: earned, on hold, coupon progress, history.',
 ];
 
 function Group({ title, items }: { title: string; items: Entry[] }) {
@@ -85,6 +114,12 @@ export default function Prototype() {
         <Text variant="caption">Helper on WhatsApp → Report a problem → Hurt. Today shows an urgent alert; Emergency shows who is called and when.</Text>
       </Card>
       <Button label="Reset the demo day" kind="outlined" onPress={() => dispatch({ type: 'reset' })} full />
+      <SectionHeader title="20 test scenarios" />
+      <Card>
+        {SCENARIOS.map((s, i) => <Text key={s} variant="caption">{i + 1}. {s}</Text>)}
+      </Card>
+      <ListItem icon="check" title="What this prototype covers" subtitle="Requirements shown and not yet shown" onPress={() => router.push('/coverage')} />
+      <ListItem icon="settings" title="Pilot settings" onPress={() => router.push('/pilot')} />
 
       <Group title="Owner app (P0)" items={OWNER} />
       <Group title="Helper (P0, no app needed)" items={HELPER} />
