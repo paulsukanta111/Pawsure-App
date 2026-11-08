@@ -43,6 +43,7 @@ const fs = require('fs');
     await see('Your demo code is 123456');
     await p.getByLabel('6-digit code').fill('111111'); await btn('Sign in').click(); await see('That code is not right');
     await p.getByLabel('6-digit code').fill('123456'); await btn('Sign in').click();
+    await see('First, what should I call you?'); await p.getByRole('link', { name: 'Use a form' }).click();
     await see('About you'); await btn('Continue').click();
     await see('Your privacy'); await p.getByRole('checkbox', { name: 'I have read the privacy notice' }).click(); await btn('Agree and continue').click();
     await see('Your pet'); await btn('Continue').click();

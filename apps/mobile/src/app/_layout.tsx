@@ -59,7 +59,7 @@ function Routes() {
         headerBackAccessibilityLabel: 'Back',
       }}
     >
-      <Stack.Protected guard={inApp} redirectTo={signedIn ? '/onboarding/profile' : '/welcome'}>
+      <Stack.Protected guard={inApp} redirectTo={signedIn ? '/onboarding/chat' : '/welcome'}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="helper-invite" options={{ title: 'Invite your helper' }} />
         <Stack.Screen name="helper-history" options={{ title: "Sunita's check-ins" }} />
@@ -113,7 +113,9 @@ function Routes() {
       </Stack.Protected>
       {/* Signed in, still setting up: registration, consent, pet, routine, care circle. */}
       <Stack.Protected guard={signedIn && !state.onboarded} redirectTo={signedIn ? '/' : '/welcome'}>
-        <Stack.Screen name="onboarding/profile" options={{ headerShown: false }} />
+        {/* v3: onboarding is a conversation; the form steps stay as "Use a form instead". */}
+        <Stack.Screen name="onboarding/chat" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding/profile" options={{ title: '' }} />
         <Stack.Screen name="onboarding/consent" options={{ title: '' }} />
         <Stack.Screen name="onboarding/pet" options={{ title: '' }} />
         <Stack.Screen name="onboarding/pet-care" options={{ title: '' }} />

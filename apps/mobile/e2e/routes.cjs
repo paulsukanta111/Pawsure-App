@@ -4,7 +4,7 @@ const ROUTES = ['/', '/find-cover', '/friends', '/pet', '/me', '/prototype', '/n
   '/rewards', '/health', '/pilot', '/coverage', '/add-pet', '/helper-invite', '/helper-history', '/code-card', '/pet-edit', '/routine', '/care-circle', '/return-check',
   '/helper', '/basic-phone', '/friend-request', '/friend/f-priya', '/friend-settings', '/privacy-profile', '/look-in?task=t-walk', '/styleguide',
   '/later/daycares', '/later/daycare?id=dc-paws', '/later/certificate', '/later/dropoff', '/later/stay', '/later/dc-today', '/later/dc-handover', '/later/dc-showme',
-  '/later/dc-audit', '/later/carers', '/later/carer', '/later/carer-visit', '/icons', '/demo-time', '/helper-app', '/helper-app/chat', '/helper-app/card'];
+  '/later/dc-audit', '/later/carers', '/later/carer', '/later/carer-visit', '/icons', '/demo-time', '/helper-app', '/helper-app/chat', '/helper-app/card', '/onboarding/chat'];
 (async () => {
   const body = fs.readFileSync(process.argv[2], 'utf8');
   const out = process.argv[3];

@@ -25,6 +25,7 @@ const fs = require('fs');
   await btn('Get started').click();
   await p.getByLabel('Mobile number').fill('9876543210'); await p.getByRole('checkbox').click(); await btn('Get code').click();
   await p.getByLabel('6-digit code').fill('123456'); await btn('Sign in').click();
+    await see('First, what should I call you?'); await p.getByRole('link', { name: 'Use a form' }).click();
   await see('About you'); await onScreen('1 about you', 'Continue'); await btn('Continue').click();
   await see('Your privacy'); await onScreen('2 privacy', 'Agree and continue');
   await p.getByRole('checkbox', { name: 'I have read the privacy notice' }).click(); await btn('Agree and continue').click();

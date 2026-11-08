@@ -10,3 +10,4 @@ export * from './codeCard';
 export * from './rewards';
 export * from './aloneWindow';
 export * from './requestParser';
+export * from './onboardingParser';
