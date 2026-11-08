@@ -141,7 +141,7 @@ export function WaComposer({ placeholder = 'Message', onCamera, onMic, cameraLab
     <View style={st.composer}>
       <View style={st.field}>
         <Icon accent={false} name="smile" size={22} tint={wa.muted} />
-        <Text variant="body" style={{ color: wa.muted, flex: 1 }}>{placeholder}</Text>
+        <Text variant="body" style={{ color: wa.muted, flex: 1, paddingTop: 2 }} numberOfLines={1}>{placeholder}</Text>
         <Icon accent={false} name="plus" size={22} tint={wa.muted} />
         <Pressable accessibilityRole="button" accessibilityLabel={cameraLabel} onPress={onCamera} hitSlop={10}>
           <Icon accent={false} name="camera" size={22} tint={wa.muted} />
@@ -225,8 +225,9 @@ const st = StyleSheet.create({
   buttons: { gap: 2, width: '82%', maxWidth: 360 },
   button: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.xs, minHeight: 44, borderRadius: radius.sm, backgroundColor: wa.surface,
     shadowColor: wa.shadow, shadowOpacity: 0.08, shadowRadius: 1, shadowOffset: { width: 0, height: 1 }, elevation: 1, paddingHorizontal: space.md },
-  composer: { flexDirection: 'row', alignItems: 'flex-end', gap: space.xs, padding: space.xs + 2, backgroundColor: wa.wallpaper },
-  field: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 48, paddingHorizontal: space.md, borderRadius: radius.pill, backgroundColor: wa.surface },
+  // Even 8px margins all round and between field and mic; icons spaced 16px inside the field.
+  composer: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.sm, paddingVertical: space.sm, backgroundColor: wa.wallpaper },
+  field: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.lg, minHeight: 48, paddingLeft: space.md, paddingRight: space.lg, borderRadius: radius.pill, backgroundColor: wa.surface },
   mic: { width: 48, height: 48, borderRadius: radius.pill, backgroundColor: wa.header, alignItems: 'center', justifyContent: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingHorizontal: space.lg, paddingVertical: space.md, minHeight: 72, backgroundColor: wa.surface },
   rowText: { flex: 1, gap: 2 },

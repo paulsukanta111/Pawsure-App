@@ -37,8 +37,20 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
           <FrameWidth.Provider value={FRAME_W}>
             <View style={{ flex: 1 }}>{children}</View>
           </FrameWidth.Provider>
+          <HomeIndicator />
         </View>
       </View>
+    </View>
+  );
+}
+
+/** Bottom strip with the home bar, so content clears the screen's rounded corners like on a real phone. */
+function HomeIndicator() {
+  const path = usePathname();
+  const bg = path === '/helper-app/chat' ? chatSim.wallpaper : path.startsWith('/helper-app') ? chatSim.surface : path === '/' || ['/find-cover', '/friends', '/pet', '/me'].includes(path) ? color.bg.card : color.bg.canvas;
+  return (
+    <View style={[st.home, { backgroundColor: bg }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <View style={st.homeBar} />
     </View>
   );
 }
@@ -73,5 +85,7 @@ const st = StyleSheet.create({
     shadowColor: color.bg.inverse, shadowOpacity: 0.35, shadowRadius: 30, shadowOffset: { width: 0, height: 14 } },
   screen: { flex: 1, borderRadius: 44, overflow: 'hidden', backgroundColor: color.bg.canvas },
   status: { height: STATUS_H, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 28 },
+  home: { height: 22, alignItems: 'center', justifyContent: 'center' },
+  homeBar: { width: 120, height: 5, borderRadius: radius.pill, backgroundColor: color.bg.inverse },
   notch: { width: 96, height: 26, borderRadius: radius.pill, backgroundColor: color.bg.inverse },
 });
