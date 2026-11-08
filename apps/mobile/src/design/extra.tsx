@@ -21,17 +21,20 @@ export interface ChatMessage {
   replies?: { label: string; onPress: () => void }[];
 }
 
-export function ChatThread({ title, subtitle, messages, footer }: { title: string; subtitle?: string; messages: ChatMessage[]; footer?: ReactNode }) {
+/** Chat thread. `bare` drops the card frame and header, for a full-screen chat with its own header. */
+export function ChatThread({ title, subtitle, messages, footer, bare }: { title: string; subtitle?: string; messages: ChatMessage[]; footer?: ReactNode; bare?: boolean }) {
   return (
-    <View style={s.chat}>
-      <View style={s.chatHead}>
-        <Avatar label="P" tone="yellow" />
-        <View style={{ flex: 1 }}>
-          <Text variant="bodyStrong">{title}</Text>
-          {subtitle ? <Text variant="small" tone="muted">{subtitle}</Text> : null}
+    <View style={bare ? null : s.chat}>
+      {bare ? null : (
+        <View style={s.chatHead}>
+          <Avatar label="P" tone="yellow" />
+          <View style={{ flex: 1 }}>
+            <Text variant="bodyStrong">{title}</Text>
+            {subtitle ? <Text variant="small" tone="muted">{subtitle}</Text> : null}
+          </View>
         </View>
-      </View>
-      <View style={s.chatBody}>
+      )}
+      <View style={[s.chatBody, bare && { paddingHorizontal: 0 }]}>
         {messages.map((m) => (
           <View key={m.id} style={{ alignItems: m.from === 'me' ? 'flex-end' : 'flex-start', gap: space.xs }}>
             <View style={[s.bubble, m.from === 'me' ? s.bubbleMe : s.bubbleThem]}>

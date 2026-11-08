@@ -9,6 +9,7 @@ import { color } from '../design/theme';
 import { AuthProvider, useAuth } from '../lib/auth';
 import { PrototypeProvider, useProto } from '../proto/store';
 import { ToastProvider } from '../design/states';
+import { ExperienceBar } from '../proto/ExperienceBar';
 
 const INLINE_FONTS = process.env.EXPO_PUBLIC_INLINE_FONTS === '1';
 
@@ -22,7 +23,11 @@ export default function RootLayout() {
       <PrototypeProvider>
         <ToastProvider>
           <StatusBar style="dark" />
-          <Routes />
+          {/* Prototype bar outside the app: switch between the owner's app and the helper's phone. */}
+          <View style={{ flex: 1 }}>
+            <ExperienceBar />
+            <View style={{ flex: 1 }}><Routes /></View>
+          </View>
         </ToastProvider>
       </PrototypeProvider>
     </AuthProvider>
@@ -92,6 +97,11 @@ function Routes() {
         <Stack.Screen name="later/carers" options={{ title: 'Verified carers (P2 preview)' }} />
         <Stack.Screen name="later/carer-visit" options={{ title: 'Carer visit (P2 preview)' }} />
       </Stack.Protected>
+      {/* Helper experience: Sunita's phone, reached from the prototype bar. Open to everyone so the
+          helper view works whatever state the owner's app is in. */}
+      <Stack.Screen name="helper-app/index" options={{ headerShown: false }} />
+      <Stack.Screen name="helper-app/chat" options={{ headerShown: false }} />
+      <Stack.Screen name="helper-app/card" options={{ title: 'Pawsure card' }} />
       {/* Opened from a WhatsApp link by the backup, who has no account (PS-102). */}
       <Stack.Screen name="look-in" options={{ title: 'Pawsure look-in' }} />
       {/* Used both during onboarding and in the app. */}
