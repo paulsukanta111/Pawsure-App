@@ -3,15 +3,15 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
-import { Button, Character, color, radius, Screen, space, Text, type CharacterName } from '../design';
+import { Button, Character, CheckInArt, color, radius, Screen, space, Text, type CharacterName } from '../design';
 import { WELCOME_HERO } from '../design/welcomeHero';
 import { useFrameWidth } from '../proto/PhoneFrame';
 
-type Slide = { art: 'hero' | CharacterName; title: string; body: string };
+type Slide = { art: 'hero' | 'checkIn' | CharacterName; title: string; body: string };
 const SLIDES: Slide[] = [
   { art: 'hero', title: "When help can't come, ask friends.", body: 'Pawsure finds a nearby friend who is free and comfortable with the task. You approve every message.' },
   { art: 'crewGroup', title: "Know who's caring, every day.", body: 'See whether planned care for your pet actually happened, with honest evidence instead of empty reassurance.' },
-  { art: 'poseKittoLaptop', title: 'Your helper checks in on WhatsApp.', body: 'A photo of the bowl, a voice note or a free missed call. Nothing to install, never a face photo.' },
+  { art: 'checkIn', title: 'Your helper checks in on WhatsApp.', body: 'A photo of the bowl, a voice note or a free missed call. Nothing to install, never a face photo.' },
 ];
 
 export default function Welcome() {
@@ -41,6 +41,8 @@ export default function Welcome() {
         </View>
         {slide.art === 'hero' ? (
           <Image source={WELCOME_HERO} resizeMode="contain" accessibilityLabel="A dog and a cat in Pawsure hoodies; the dog checks a phone while a friend gives a thumbs up" style={{ width: heroW, height: heroH }} />
+        ) : slide.art === 'checkIn' ? (
+          <View style={{ height: heroH, justifyContent: 'center' }}><CheckInArt width={Math.min(heroW, Math.round(heroH * 300 / 280))} label="A phone showing the helper's WhatsApp check-in: a photo of the bowl with today's code, marked recorded" /></View>
         ) : (
           <View style={{ height: heroH, justifyContent: 'center' }}><Character name={slide.art} height={Math.min(heroH, 250)} label={slide.title} /></View>
         )}

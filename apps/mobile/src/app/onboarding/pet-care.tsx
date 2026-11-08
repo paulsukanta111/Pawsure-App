@@ -1,7 +1,8 @@
 // Onboarding 4/6: food, allergies, medication, vet, nearest 24x7 clinic (PS-003, PS-004).
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Button, Screen, SectionHeader, StepHeader, Text, TextField } from '../../design';
+import { View } from 'react-native';
+import { Button, Screen, SectionHeader, space, StepHeader, Text, TextField } from '../../design';
 import { useProto } from '../../proto/store';
 
 export default function OnboardPetCare() {
@@ -11,10 +12,11 @@ export default function OnboardPetCare() {
   return (
     <Screen
       footer={
-        <>
-        <Button label="Continue" disabled={!phoneOk} onPress={() => { dispatch({ type: 'pet', patch: p }); router.push('/onboarding/routine'); }} full />
-        <Button label="Skip for now" kind="outlined" onPress={() => router.push('/onboarding/routine')} full />
-        </>
+        // Side by side: the secondary choice on the left, the main action on the right.
+        <View style={{ flexDirection: 'row', gap: space.sm }}>
+          <View style={{ flex: 1 }}><Button label="Skip for now" kind="outlined" onPress={() => router.push('/onboarding/routine')} full /></View>
+          <View style={{ flex: 1 }}><Button label="Continue" disabled={!phoneOk} onPress={() => { dispatch({ type: 'pet', patch: p }); router.push('/onboarding/routine'); }} full /></View>
+        </View>
       }
     >
       <StepHeader step={4} of={6} title={`${p.name}'s care`} body="Your helper and friends see what they need for the task. Shown as owner-provided." />

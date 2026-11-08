@@ -7,3 +7,4 @@ export * from './extra';
 export * from './states';
 export * from './Character';
 export * from './whatsapp';
+export * from './CheckInArt';
