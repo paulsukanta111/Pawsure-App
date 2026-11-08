@@ -9,9 +9,13 @@ import { Icon, type IconName } from './Icon';
 import { Text } from './Text';
 import { color, confidenceStyle, radius, space, touchTarget } from './theme';
 
-export function Screen({ title, subtitle, header, children, background }: { title?: string; subtitle?: string; header?: ReactNode; children: ReactNode; background?: string }) {
+/**
+ * Screen: scrolling content, plus an optional `footer` pinned to the bottom of the screen
+ * (onboarding's Continue, etc.) so the main action is always in view, never only after scrolling.
+ */
+export function Screen({ title, subtitle, header, children, background, footer }: { title?: string; subtitle?: string; header?: ReactNode; children: ReactNode; background?: string; footer?: ReactNode }) {
   return (
-    <SafeAreaView style={[s.safe, background ? { backgroundColor: background } : null]} edges={['top']}>
+    <SafeAreaView style={[s.safe, background ? { backgroundColor: background } : null]} edges={footer ? ['top', 'bottom'] : ['top']}>
       <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
         <View style={s.inner}>
           {header}
@@ -20,6 +24,11 @@ export function Screen({ title, subtitle, header, children, background }: { titl
           {children}
         </View>
       </ScrollView>
+      {footer ? (
+        <View style={[s.footer, background ? { backgroundColor: background } : null]}>
+          <View style={s.footerInner}>{footer}</View>
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -212,6 +221,9 @@ export function IllustrationSlot({ name, height = 160 }: { name: string; height?
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: color.bg.canvas },
   scroll: { paddingBottom: space.xxl },
+  footer: { borderTopWidth: 1, borderTopColor: color.border.subtle, backgroundColor: color.bg.canvas, paddingHorizontal: space.lg, paddingTop: space.md, paddingBottom: space.lg,
+    shadowColor: color.bg.inverse, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: -4 }, elevation: 8 },
+  footerInner: { width: '100%', maxWidth: 640, alignSelf: 'center', gap: space.sm },
   inner: { width: '100%', maxWidth: 640, alignSelf: 'center', paddingHorizontal: space.lg, paddingTop: space.lg, gap: space.lg },
   card: { backgroundColor: color.bg.card, borderRadius: radius.lg, padding: space.lg, gap: space.md, borderWidth: 1, borderColor: color.border.subtle },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: space.sm },

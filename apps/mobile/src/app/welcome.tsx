@@ -22,7 +22,17 @@ export default function Welcome() {
   const heroW = Math.min(width - 32, 420);
   const heroH = Math.round((heroW * WELCOME_HERO.height) / WELCOME_HERO.width);
   return (
-    <Screen background={color.bg.paper}>
+    <Screen background={color.bg.paper} footer={
+      <>
+        {i < SLIDES.length - 1 ? (
+          <Button label="Next" onPress={() => setI(i + 1)} full />
+        ) : null}
+        <Button label="Get started" kind={i < SLIDES.length - 1 ? 'outlined' : 'primary'} onPress={() => router.push('/sign-in')} full />
+        <Pressable accessibilityRole="link" onPress={() => router.push('/sign-in')} hitSlop={8} style={st.login}>
+          <Text variant="caption" tone="muted">Already have an account? <Text variant="label">Log in</Text></Text>
+        </Pressable>
+      </>
+    }>
       <View style={st.wrap}>
         {/* Mockup order: headline, short line, illustration, dots, then the yellow button. */}
         <View style={st.copy}>
@@ -42,13 +52,6 @@ export default function Welcome() {
             </Pressable>
           ))}
         </View>
-        {i < SLIDES.length - 1 ? (
-          <Button label="Next" onPress={() => setI(i + 1)} full />
-        ) : null}
-        <Button label="Get started" kind={i < SLIDES.length - 1 ? 'outlined' : 'primary'} onPress={() => router.push('/sign-in')} full />
-        <Pressable accessibilityRole="link" onPress={() => router.push('/sign-in')} hitSlop={8} style={st.login}>
-          <Text variant="caption" tone="muted">Already have an account? <Text variant="label">Log in</Text></Text>
-        </Pressable>
         <Text variant="small" tone="muted" align="center">Pawsure is a coordination and evidence tool. It is not a vet or an emergency service.</Text>
       </View>
     </Screen>
@@ -58,7 +61,7 @@ export default function Welcome() {
 const st = StyleSheet.create({
   wrap: { alignItems: 'center', gap: space.lg, paddingTop: space.lg, width: '100%', maxWidth: 480, alignSelf: 'center' },
   copy: { alignItems: 'center', gap: space.sm, minHeight: 150, justifyContent: 'center' },
-  login: { minHeight: 32, justifyContent: 'center' },
+  login: { minHeight: 32, justifyContent: 'center', alignItems: 'center' },
   title: { maxWidth: 340 },
   body: { maxWidth: 360 },
   dots: { flexDirection: 'row', gap: space.sm, alignItems: 'center' },

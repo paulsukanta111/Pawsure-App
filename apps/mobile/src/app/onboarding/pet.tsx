@@ -10,7 +10,13 @@ export default function OnboardPet() {
   const [p, setP] = useState(state.pet);
   const [photo, setPhoto] = useState(false);
   return (
-    <Screen>
+    <Screen
+      footer={
+        <>
+        <Button label="Continue" disabled={!p.name.trim()} onPress={() => { dispatch({ type: 'pet', patch: p }); router.push('/onboarding/pet-care'); }} full />
+        </>
+      }
+    >
       <StepHeader step={3} of={6} title="Your pet" body="Only the name is required now." />
       <PhotoPicker label="Add a photo" value={photo} onPick={() => setPhoto(true)} art={<Character name={p.species === 'cat' ? 'avatarKitto' : 'avatarSparky'} width={104} />} />
       <TextField label="Pet's name" value={p.name} onChangeText={(v) => setP({ ...p, name: v })} />
@@ -21,7 +27,6 @@ export default function OnboardPet() {
       </View>
       <TextField label="Breed" value={p.breed} onChangeText={(v) => setP({ ...p, breed: v })} />
       <TextField label="Age" value={p.age} onChangeText={(v) => setP({ ...p, age: v })} />
-      <Button label="Continue" disabled={!p.name.trim()} onPress={() => { dispatch({ type: 'pet', patch: p }); router.push('/onboarding/pet-care'); }} full />
     </Screen>
   );
 }

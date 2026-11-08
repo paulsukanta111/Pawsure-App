@@ -12,7 +12,13 @@ export default function OnboardCircle() {
   const [coPhone, setCoPhone] = useState('+91 98200 11111');
   const finish = () => { dispatch({ type: 'finish_onboarding' }); router.replace('/'); };
   return (
-    <Screen>
+    <Screen
+      footer={
+        <>
+        <Button label="Finish setup" onPress={finish} full />
+        </>
+      }
+    >
       <StepHeader step={6} of={6} title="Who helps" body="Add the people who look after your pet." />
       <SectionHeader title="Helper" />
       <ListItem icon="care" title={state.helper.name} subtitle={CONSENT_TEXT[state.helper.consent].title}
@@ -33,7 +39,6 @@ export default function OnboardCircle() {
             onPress={() => { dispatch({ type: 'invite_co_owner', name: coName.trim(), phone: coPhone }); toast(`Invite for ${coName.trim()} ready (simulated)`, 'info'); }} />
         </Card>
       ) : null}
-      <Button label="Finish setup" onPress={finish} full />
     </Screen>
   );
 }

@@ -13,7 +13,13 @@ export default function OnboardProfile() {
   const [touched, setTouched] = useState(false);
   const invalid = name.trim().length < 2;
   return (
-    <Screen>
+    <Screen
+      footer={
+        <>
+        <Button label="Continue" disabled={invalid} onPress={() => { dispatch({ type: 'profile', patch: { name: name.trim() } }); router.push('/onboarding/consent'); }} full />
+        </>
+      }
+    >
       <StepHeader step={1} of={6} title="About you" body="Friends see your first name and society, never your flat number." />
       <PhotoPicker label="Add your photo" value={state.profile.photo} onPick={() => dispatch({ type: 'profile', patch: { photo: true } })}
         art={<Avatar label={name || 'N'} tone="yellow" size={128} />} />
@@ -24,7 +30,6 @@ export default function OnboardProfile() {
         {LANGS.map((l) => <Chip key={l.value} label={l.label} selected={state.profile.language === l.value} onPress={() => dispatch({ type: 'profile', patch: { language: l.value } })} />)}
       </View>
       {state.profile.language !== 'en' ? <Text variant="small" tone="muted">Owner screens in Hindi and Marathi are coming; helper and friend messages already use them.</Text> : null}
-      <Button label="Continue" disabled={invalid} onPress={() => { dispatch({ type: 'profile', patch: { name: name.trim() } }); router.push('/onboarding/consent'); }} full />
     </Screen>
   );
 }

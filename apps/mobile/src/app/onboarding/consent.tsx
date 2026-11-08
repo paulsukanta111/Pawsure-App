@@ -9,7 +9,14 @@ export default function OnboardConsent() {
   const [whatsapp, setWhatsapp] = useState(true);
   const [push, setPush] = useState(true);
   return (
-    <Screen>
+    <Screen
+      footer={
+        <>
+        {!read ? <Text variant="small" tone="muted" align="center">Tick "I have read the privacy notice" to continue.</Text> : null}
+        <Button label="Agree and continue" disabled={!read || (!whatsapp && !push)} onPress={() => router.push('/onboarding/pet')} full />
+        </>
+      }
+    >
       <StepHeader step={2} of={6} title="Your privacy" body="Plain language. Also available in Hindi and Marathi." />
       <Card>
         <Text variant="subheading">What we collect and why</Text>
@@ -39,7 +46,6 @@ export default function OnboardConsent() {
       </Card>
       <Checkbox label="I have read the privacy notice" checked={read} onChange={setRead} />
       <Text variant="small" tone="muted">Notice version {CONSENT_VERSION}</Text>
-      <Button label="Agree and continue" disabled={!read || (!whatsapp && !push)} onPress={() => router.push('/onboarding/pet')} full />
     </Screen>
   );
 }
