@@ -21,7 +21,7 @@ const fs = require('fs');
   await see('Neha!');
   await step('dropdown lists both views', async () => {
     await btn(/^Viewing /).click(); await p.screenshot({ path: `${out}/h0-dropdown.png` });
-    if ((await p.getByRole('menuitem').count()) !== 2) throw new Error('menu items');
+    if ((await p.getByRole('menuitem').count()) !== 3) throw new Error('menu items');
     await btn(/^Viewing /).click();
   });
   await step("switch to Sunita's phone (Marathi chat list)", async () => {
@@ -53,6 +53,13 @@ const fs = require('fs');
     await p.getByRole('button', { name: 'Pawsure थांबवा' }).filter({ visible: true }).first().click();
     await pick("Neha's app"); await see('Neha!');
     await p.getByText(/withdr|stopped|Stopped/i).filter({ visible: true }).first().waitFor({ timeout: 8000 });
+  });
+  await step('dropdown: start from the welcome screens, page through, reach sign-in', async () => {
+    await btn(/^Viewing /).click(); await p.getByRole('menuitem').filter({ hasText: 'Start from the welcome screens' }).click();
+    await see("When help can't come, ask friends."); await p.screenshot({ path: `${out}/w1.png` });
+    await btn('Next').click(); await see("Know who's caring, every day."); await p.screenshot({ path: `${out}/w2.png` });
+    await btn('Next').click(); await see('Your helper checks in on WhatsApp.'); await p.screenshot({ path: `${out}/w3.png` });
+    await btn('Get started').click(); await p.getByLabel('Mobile number').waitFor({ timeout: 8000 });
   });
   console.log(fails ? `${fails} FAILED` : 'HELPER EXPERIENCE OK', '· page errors:', errs.length ? errs.join(' | ') : 0);
   await b.close();

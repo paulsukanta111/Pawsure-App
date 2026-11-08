@@ -7,13 +7,15 @@ import { router, usePathname } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { color, Icon, radius, space, Text } from '../design';
+import { useAuth } from '../lib/auth';
 import { useProto } from './store';
 
 type Option = { id: 'owner' | 'helper'; title: string; detail: string; go: () => void };
 
 export function ExperienceBar() {
   const path = usePathname();
-  const { state } = useProto();
+  const { state, dispatch } = useProto();
+  const auth = useAuth();
   const [open, setOpen] = useState(false);
   const current: Option['id'] = path.startsWith('/helper-app') ? 'helper' : 'owner';
   const options: Option[] = [
@@ -47,6 +49,19 @@ export function ExperienceBar() {
                 {o.id === current ? <Icon name="check" size={18} /> : null}
               </Pressable>
             ))}
+            <View style={st.sep} />
+            {/* Fresh start: the three welcome slides, sign-in and onboarding, as a new owner sees them. */}
+            <Pressable accessibilityRole="menuitem" onPress={() => {
+              setOpen(false);
+              dispatch({ type: 'replay_onboarding' });
+              if (auth.mode === 'local') auth.signOut(); else router.navigate('/welcome');
+            }} style={({ pressed }) => [st.item, pressed && { backgroundColor: color.bg.sunken }]}>
+              <Icon name="leaf" size={20} />
+              <View style={{ flex: 1 }}>
+                <Text variant="label">Start from the welcome screens</Text>
+                <Text variant="small" tone="muted">New owner: welcome, sign-in, onboarding</Text>
+              </View>
+            </Pressable>
           </View>
         ) : null}
       </View>
@@ -60,5 +75,6 @@ const st = StyleSheet.create({
   select: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 40, paddingHorizontal: space.md, borderRadius: radius.pill, backgroundColor: color.bg.card },
   menu: { position: 'absolute', top: 46, left: 0, right: 0, minWidth: 260, backgroundColor: color.bg.card, borderRadius: radius.lg, padding: space.xs, borderWidth: 1, borderColor: color.border.subtle,
     shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 8 },
+  sep: { height: 1, backgroundColor: color.border.subtle, marginVertical: space.xs },
   item: { flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderRadius: radius.md, minHeight: 56 },
 });

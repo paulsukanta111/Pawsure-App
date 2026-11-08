@@ -72,7 +72,8 @@ export default function Me() {
       <ListItem icon="paw" title="Icons" subtitle="The Pawsure icon library" onPress={() => router.push('/icons')} />
       <ListItem icon="settings" title="Pilot settings" subtitle="Rewards experiment and feature switches" onPress={() => router.push('/pilot')} />
       <ListItem icon="check" title="What this prototype covers" subtitle="PRD requirements shown and not yet shown" onPress={() => router.push('/coverage')} />
-      <Button label="Replay onboarding" kind="outlined" onPress={() => dispatch({ type: 'replay_onboarding' })} full />
+      {/* Starts again from the welcome screens: in the shareable prototype that means signing out too. */}
+      <Button label="Replay welcome and onboarding" kind="outlined" onPress={() => { dispatch({ type: 'replay_onboarding' }); if (auth.mode === 'local') auth.signOut(); }} full />
 
       <Button label="Reset demo day" kind="outlined" onPress={() => dispatch({ type: 'reset' })} full />
       <Button label="Sign out" kind="outlined" onPress={auth.signOut} full />
