@@ -2,6 +2,7 @@
 import { Stack } from 'expo-router/js-stack';
 import { Linking } from 'react-native';
 import { Button, Card, KeyValue, ListItem, NoticeBanner, Screen, SectionHeader, Text, useToast } from '../design';
+import { HEALTH_ACCENT } from '../proto/labels';
 import { useProto } from '../proto/store';
 
 const HISTORY = [
@@ -24,7 +25,7 @@ export default function Health() {
       {state.health.map((h) => {
         const days = Math.round((h.dueOn.getTime() - now.getTime()) / 86_400_000);
         return (
-          <ListItem key={h.id} icon={h.kind === 'vaccine' ? 'vaccine' : h.kind === 'deworming' ? 'medication' : 'calendar'} title={h.title} subtitle={h.detail}
+          <ListItem key={h.id} accent={HEALTH_ACCENT(h.kind)} icon={h.kind === 'vaccine' ? 'vaccine' : h.kind === 'deworming' ? 'medication' : 'calendar'} title={h.title} subtitle={h.detail}
             meta={h.done ? 'Done' : days <= 0 ? 'Due today' : `Due in ${days} days`} metaTone={h.done ? 'success' : days <= 7 ? 'alert' : 'muted'}
             right={h.done ? undefined : <Button label="Done" kind="outlined" onPress={() => { dispatch({ type: 'health_done', id: h.id }); toast(`${h.title} marked done`); }} />} />
         );

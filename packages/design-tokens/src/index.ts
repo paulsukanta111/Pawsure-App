@@ -30,6 +30,14 @@ export const palette = {
   success: '#2E6B34',
   successTint: '#E3F0DF',
   white: '#FFFFFF',
+  // Secondary palette (v2.2), from the icon sheet's own fills, so the app is not all yellow.
+  // Yellow stays for primary actions and the brand; these carry selection and information.
+  teal: '#0E6B63',
+  tealTint: '#D9F0EB',
+  skyTint: '#E3F3FA',
+  mintTint: '#E4F5EA',
+  peachTint: '#FDE9DD',
+  lilacTint: '#EEE9FA',
 } as const;
 
 export const color = {
@@ -42,6 +50,13 @@ export const color = {
     brand: palette.stone,          // illustration backdrops, onboarding
     inverse: palette.charcoal,
     selected: palette.yellowTint,
+    /** Tinted surfaces for cards and banners, so not every highlight is yellow. */
+    sky: palette.skyTint,
+    mint: palette.mintTint,
+    peach: palette.peachTint,
+    lilac: palette.lilacTint,
+    /** Selected chips, toggles and options. */
+    chosen: palette.tealTint,
   },
   text: {
     primary: palette.charcoal,
@@ -50,13 +65,25 @@ export const color = {
     onAction: palette.charcoal,    // text on Golden Yellow buttons
     alert: palette.alert,
     success: palette.success,
-    /** "See all" links: a dark amber that reads as the brand yellow but passes 4.5:1. */
-    link: '#8A5A00',
+    /** Links ("See all"): dark teal, a calm contrast to the yellow. */
+    link: palette.teal,
   },
   action: {
     primary: palette.goldenYellow,
     primaryPressed: '#E6B000',
     border: palette.charcoal,
+    /** Selection colour: checked boxes, on toggles, chosen chips' outline. */
+    select: palette.teal,
+    onSelect: palette.white,
+  },
+  /** Decorative accent bars and dots on list rows (meaning is always also in the text). */
+  accent: {
+    yellow: palette.goldenYellow,
+    sky: '#5BB8E0',
+    teal: '#3DBFA8',
+    orange: '#F98442',
+    green: '#6CC24A',
+    lilac: '#A48BE0',
   },
   border: {
     subtle: '#E4DCC2',             // decorative dividers between cards (non-essential)

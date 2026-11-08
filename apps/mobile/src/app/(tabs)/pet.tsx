@@ -6,7 +6,7 @@ import {
   Button, Card, Character, CharacterAvatar, Chip, color, Icon, IconButton, KeyValue, LineChart, ListItem, MetricRow, QuickAction, radius, Screen, SectionHeader,
   SegmentedTabs, space, Text,
 } from '../../design';
-import { TASK_ICON } from '../../proto/labels';
+import { HEALTH_ACCENT, TASK_ACCENT, TASK_ICON } from '../../proto/labels';
 import { fmt, useProto } from '../../proto/store';
 
 type Tab = 'health' | 'routine' | 'emergency';
@@ -21,7 +21,7 @@ export default function Pet() {
     <Screen>
       {/* Mockup pet profile: the character on a soft yellow circle. */}
       <View style={{ alignItems: 'center', justifyContent: 'flex-end', height: 210 }}>
-        <View style={{ position: 'absolute', bottom: 0, width: 200, height: 200, borderRadius: radius.pill, backgroundColor: color.bg.selected }} />
+        <View style={{ position: 'absolute', bottom: 0, width: 200, height: 200, borderRadius: radius.pill, backgroundColor: color.bg.sky }} />
         {pet.species === 'cat'
           ? <View style={{ marginBottom: 10 }}><CharacterAvatar name="avatarKitto" size={180} label={pet.name} /></View>
           : <Character name="poseSparky" height={200} label={pet.name} />}
@@ -69,13 +69,13 @@ export default function Pet() {
               <Text variant="caption" tone="muted">{range === 'month' ? 'Monthly' : 'Yearly'} view fills in as you log weights. Showing this week for now.</Text>
             )}
           </Card>
-          <MetricRow icon="food" title="Food" value={pet.food} status="Owner-provided" statusTone="muted" />
-          <MetricRow icon="activity" title="Walks this week" value="5 of 7 with evidence" status="Good" />
-          <MetricRow icon="water" title="Water" value="Bowl refilled at lunch daily" status="Good" />
+          <MetricRow icon="food" title="Food" value={pet.food} status="Owner-provided" statusTone="muted" accent="orange" />
+          <MetricRow icon="activity" title="Walks this week" value="5 of 7 with evidence" status="Good" accent="green" />
+          <MetricRow icon="water" title="Water" value="Bowl refilled at lunch daily" status="Good" accent="sky" />
           <SectionHeader title="Reminders" action="All" onAction={() => router.push('/health')} />
           {state.health.map((h) => {
             const d = Math.round((h.dueOn.getTime() - now.getTime()) / 86_400_000);
-            return <ListItem key={h.id} icon={h.kind === 'vaccine' ? 'vaccine' : h.kind === 'deworming' ? 'medication' : 'calendar'} title={h.title} subtitle={h.detail}
+            return <ListItem key={h.id} accent={HEALTH_ACCENT(h.kind)} icon={h.kind === 'vaccine' ? 'vaccine' : h.kind === 'deworming' ? 'medication' : 'calendar'} title={h.title} subtitle={h.detail}
               meta={h.done ? 'Done' : d <= 0 ? 'Today' : `Due in ${d} days`} metaTone={h.done ? 'success' : d <= 7 ? 'alert' : 'muted'} onPress={() => router.push('/health')} />;
           })}
         </>
@@ -83,7 +83,7 @@ export default function Pet() {
 
       {tab === 'routine' ? (
         <>
-          {state.tasks.map((t) => <ListItem key={t.id} icon={TASK_ICON[t.type]} title={t.title} subtitle={`${fmt(t.dueAt)} daily`} meta={t.instructions} onPress={() => router.push(`/task/${t.id}`)} />)}
+          {state.tasks.map((t) => <ListItem key={t.id} accent={TASK_ACCENT[t.type]} icon={TASK_ICON[t.type]} title={t.title} subtitle={`${fmt(t.dueAt)} daily`} meta={t.instructions} onPress={() => router.push(`/task/${t.id}`)} />)}
           <Button label="Edit routine" kind="secondary" icon="clock" onPress={() => router.push('/routine')} full />
         </>
       ) : null}

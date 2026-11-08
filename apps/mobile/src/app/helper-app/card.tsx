@@ -62,7 +62,7 @@ export default function HelperCard() {
       </Card>
 
       {wallet.held ? (
-        <Card tone="brand">
+        <Card tone="peach">
           <Text variant="bodyStrong">{A.onHold}: {wallet.held}</Text>
           <Text variant="caption">{A.onHoldBody}</Text>
         </Card>

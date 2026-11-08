@@ -89,7 +89,8 @@ export function Avatar({ label, tone = 'beige', size = 40 }: { label: string; to
 
 /** Banner for screens that preview later releases (P1/P2) or simulate another person's channel. */
 export function NoticeBanner({ icon = 'leaf', title, body, tone = 'brand' }: { icon?: IconName; title: string; body?: string; tone?: 'brand' | 'alert' | 'calm' }) {
-  const bg = tone === 'alert' ? color.status.alertTint : tone === 'calm' ? color.status.successTint : color.bg.selected;
+  // Informational banners are sky blue, so they read differently from yellow actions.
+  const bg = tone === 'alert' ? color.status.alertTint : tone === 'calm' ? color.status.successTint : color.bg.sky;
   const border = 'transparent';
   return (
     <View style={[s.banner, { backgroundColor: bg, borderColor: border }]}>

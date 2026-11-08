@@ -21,7 +21,7 @@ export default function Friends() {
       {!inviting ? (
         <Button label="Invite a friend" icon="plus" onPress={() => setInviting(true)} full />
       ) : (
-        <Card tone="brand">
+        <Card tone="mint">
           <Text variant="subheading">Invite a friend</Text>
           <TextField label="Name" value={fName} onChangeText={setFName} />
           <TextField label="WhatsApp number" value={fPhone} onChangeText={setFPhone} keyboardType="phone-pad" />

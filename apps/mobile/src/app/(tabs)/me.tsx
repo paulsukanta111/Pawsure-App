@@ -38,7 +38,7 @@ export default function Me() {
         </Text>
       ) : null}
       {auth.mode !== 'otp' ? (
-        <Card tone="brand">
+        <Card tone="lilac">
           <Text variant="caption">Demo household. The day's events are simulated on this device; use "All screens" to explore every flow.</Text>
           <Button label="All screens" icon="leaf" onPress={() => router.push('/prototype')} />
         </Card>

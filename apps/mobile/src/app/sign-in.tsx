@@ -54,7 +54,7 @@ export default function SignIn() {
       <ProgressDots count={3} index={step === 'phone' ? 1 : 2} />
 
       {auth.mode !== 'otp' ? (
-        <Card tone="brand">
+        <Card tone="lilac">
           <Text variant="bodyStrong">Demo mode</Text>
           <Text variant="caption">
             {step === 'phone'

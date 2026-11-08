@@ -165,7 +165,7 @@ export default function FindCover() {
 
       {/* Interpretation card (PS-056): editable; search blocked until material fields are clear. */}
       {!search && phase === 'confirm' && draft ? (
-        <Card tone="brand">
+        <Card tone="sky">
           <Text variant="subheading">Check the details</Text>
           <Text variant="label">Tasks</Text>
           <View style={st.row}>
@@ -234,7 +234,7 @@ export default function FindCover() {
               const on = picked.includes(m.friend.id);
               const lang = state.friendLanguage[m.friend.id] ?? 'en';
               return (
-                <Card key={m.friend.id} tone={on ? 'brand' : 'plain'}>
+                <Card key={m.friend.id} tone={on ? 'mint' : 'plain'}>
                   <View style={st.head}>
                     <Avatar label={m.friend.displayName} tone={i === 0 ? 'yellow' : 'beige'} />
                     <View style={{ flex: 1 }}>

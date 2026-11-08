@@ -33,11 +33,16 @@ export function Screen({ title, subtitle, header, children, background, footer }
   );
 }
 
-export function Card({ children, tone = 'plain', style }: { children: ReactNode; tone?: 'plain' | 'alert' | 'calm' | 'brand'; style?: ViewStyle }) {
+export type CardTone = 'plain' | 'alert' | 'calm' | 'brand' | 'sky' | 'mint' | 'peach' | 'lilac';
+export function Card({ children, tone = 'plain', style }: { children: ReactNode; tone?: CardTone; style?: ViewStyle }) {
   return <View style={[s.card, tones[tone], style]}>{children}</View>;
 }
 const tones: Record<string, ViewStyle> = {
   plain: {},
+  sky: { backgroundColor: color.bg.sky, borderColor: 'transparent' },
+  mint: { backgroundColor: color.bg.mint, borderColor: 'transparent' },
+  peach: { backgroundColor: color.bg.peach, borderColor: 'transparent' },
+  lilac: { backgroundColor: color.bg.lilac, borderColor: 'transparent' },
   // Tinted cards carry no outline: the fill, icon and words mark them, not a dark border.
   alert: { backgroundColor: color.status.alertTint, borderColor: 'transparent' },
   calm: { backgroundColor: color.status.successTint, borderColor: 'transparent' },
@@ -71,12 +76,12 @@ export function ListItem({
   icon, title, subtitle, meta, metaTone = 'muted', right, onPress, accent,
 }: {
   icon?: IconName; title: string; subtitle?: string; meta?: string; metaTone?: 'muted' | 'alert' | 'success'; right?: ReactNode; onPress?: () => void;
-  /** Yellow bar on the leading edge: the item that needs attention first. */
-  accent?: boolean;
+  /** Coloured bar on the leading edge: true = yellow, or name an accent colour (e.g. by category). */
+  accent?: boolean | keyof typeof color.accent;
 }) {
   const body = (
     <>
-      {accent ? <View style={s.accentBar} /> : null}
+      {accent ? <View style={[s.accentBar, { backgroundColor: color.accent[accent === true ? 'yellow' : accent] }]} /> : null}
       {icon ? <View style={s.listIcon}><Icon name={icon} size={28} /></View> : null}
       <View style={{ flex: 1, gap: 2 }}>
         <Text variant="bodyStrong">{title}</Text>
@@ -96,12 +101,12 @@ export function ListItem({
 }
 
 /** Daily metric row (mockup "Food intake 240 kcal · Good"): yellow edge, icon, value, status word. */
-export function MetricRow({ icon, title, value, status, statusTone = 'success', onPress }: {
-  icon: IconName; title: string; value: string; status?: string; statusTone?: 'success' | 'alert' | 'muted'; onPress?: () => void;
+export function MetricRow({ icon, title, value, status, statusTone = 'success', onPress, accent = 'yellow' }: {
+  icon: IconName; title: string; value: string; status?: string; statusTone?: 'success' | 'alert' | 'muted'; onPress?: () => void; accent?: keyof typeof color.accent;
 }) {
   const body = (
     <>
-      <View style={s.accentBar} />
+      <View style={[s.accentBar, { backgroundColor: color.accent[accent] }]} />
       <View style={s.listIcon}><Icon name={icon} size={28} /></View>
       <View style={{ flex: 1 }}>
         <Text variant="bodyStrong">{title}</Text>
@@ -234,7 +239,7 @@ const s = StyleSheet.create({
   accentBar: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 5, backgroundColor: color.action.primary },
   quick: { alignItems: 'center', gap: space.xs, minWidth: 64 },
   quickCircle: { width: 56, height: 56, borderRadius: radius.pill, borderWidth: 1.5, borderColor: color.border.subtle, backgroundColor: color.bg.card, alignItems: 'center', justifyContent: 'center' },
-  quickCircleOn: { backgroundColor: color.bg.selected, borderColor: color.action.primary, borderWidth: 2 },
+  quickCircleOn: { backgroundColor: color.bg.chosen, borderColor: color.action.select, borderWidth: 2 },
   pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderRadius: radius.pill, paddingHorizontal: space.md, paddingVertical: 2 },
   petChip: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm, paddingLeft: space.sm, paddingRight: space.lg, borderRadius: radius.lg, borderWidth: 2, borderColor: 'transparent', minHeight: touchTarget },
   petChipOn: { borderColor: color.action.primary, backgroundColor: color.bg.selected },

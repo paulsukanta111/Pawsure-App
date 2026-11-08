@@ -11,10 +11,17 @@ const SWATCHES: { name: string; hex: string; use: string }[] = [
   { name: 'Stone', hex: palette.stone, use: 'Background surfaces' },
   { name: 'Golden Yellow', hex: palette.goldenYellow, use: 'Primary actions & highlights' },
   { name: 'Cream', hex: palette.cream, use: 'Cards & panels' },
-  { name: 'Soft Beige', hex: palette.softBeige, use: 'Screen background' },
+  { name: 'Soft Beige', hex: palette.softBeige, use: 'Tracks & tiles' },
+  { name: 'Cream canvas', hex: palette.creamCanvas, use: 'Screen background' },
   { name: 'Charcoal', hex: palette.charcoal, use: 'Text & icons' },
   { name: 'Alert', hex: palette.alert, use: 'Missed / not confirmed' },
   { name: 'Success', hex: palette.success, use: 'Good / covered' },
+  { name: 'Teal', hex: palette.teal, use: 'Selection, links' },
+  { name: 'Teal tint', hex: palette.tealTint, use: 'Chosen chips & options' },
+  { name: 'Sky tint', hex: palette.skyTint, use: 'Info cards & banners' },
+  { name: 'Mint tint', hex: palette.mintTint, use: 'Friends, picked people' },
+  { name: 'Peach tint', hex: palette.peachTint, use: 'On-hold, gentle warnings' },
+  { name: 'Lilac tint', hex: palette.lilacTint, use: 'Demo & prototype notes' },
 ];
 
 export default function StyleGuide() {

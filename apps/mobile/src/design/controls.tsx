@@ -92,7 +92,7 @@ export function TextField({ icon, label, style, ...rest }: TextInputProps & { ic
 export function Checkbox({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <Pressable accessibilityRole="checkbox" accessibilityState={{ checked }} onPress={() => onChange(!checked)} style={s.checkRow}>
-      <View style={[s.box, checked && s.boxOn]}>{checked ? <Icon name="check" size={16} /> : null}</View>
+      <View style={[s.box, checked && s.boxOn]}>{checked ? <Icon name="check" size={16} tint={color.action.onSelect} accent={false} /> : null}</View>
       <Text variant="body">{label}</Text>
     </Pressable>
   );
@@ -119,7 +119,7 @@ export function SegmentedTabs<T extends string>({ options, value, onChange }: { 
         const on = o.value === value;
         return (
           <Pressable key={o.value} accessibilityRole="tab" accessibilityState={{ selected: on }} onPress={() => onChange(o.value)} style={[s.segment, on && s.segmentOn]}>
-            <Text variant="label" tone={on ? undefined : 'muted'} align="center">{o.label}</Text>
+            <Text variant="label" tone={on ? 'inverse' : 'muted'} align="center">{o.label}</Text>
           </Pressable>
         );
       })}
@@ -134,7 +134,7 @@ export function Chip({ label, selected, onPress, icon }: { label: string; select
   const content = (
     <>
       {icon ? <Icon name={icon} size={16} /> : null}
-      {selected && !icon ? <Icon name="check" size={16} /> : null}
+      {selected && !icon ? <Icon name="check" size={16} tint={color.action.select} accent={false} /> : null}
       <Text variant="label">{label}</Text>
     </>
   );
@@ -174,21 +174,22 @@ const s = StyleSheet.create({
   input: { flex: 1, color: color.text.primary, paddingVertical: space.sm, outlineStyle: 'none' } as never,
   checkRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: touchTarget },
   box: { width: 24, height: 24, borderRadius: radius.xs, borderWidth: 1.5, borderColor: color.border.control, backgroundColor: color.bg.raised, alignItems: 'center', justifyContent: 'center' },
-  boxOn: { backgroundColor: color.action.primary, borderColor: color.border.strong },
+  boxOn: { backgroundColor: color.action.select, borderColor: color.action.select },
   toggleRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: touchTarget },
   track: { width: 52, height: 30, borderRadius: radius.pill, borderWidth: 1.5, borderColor: color.border.control, backgroundColor: color.bg.canvas, padding: 2, justifyContent: 'center' },
-  trackOn: { backgroundColor: color.action.primary, borderColor: color.border.strong },
+  trackOn: { backgroundColor: color.action.select, borderColor: color.action.select },
   knob: { width: 22, height: 22, borderRadius: radius.pill, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: color.border.control },
-  knobOn: { alignSelf: 'flex-end', borderColor: color.border.strong },
+  knobOn: { alignSelf: 'flex-end', borderColor: color.action.select },
   // Mockup "Week / Month / Year": full-width beige track, yellow rounded block for the selected option.
   segments: { flexDirection: 'row', gap: space.xs, backgroundColor: color.bg.sunken, borderRadius: radius.md, padding: space.xs, alignSelf: 'stretch' },
   segment: { flex: 1, minHeight: 44, paddingHorizontal: space.md, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' },
-  segmentOn: { backgroundColor: color.action.primary },
+  // Selected option in charcoal: a strong, non-yellow contrast to the yellow buttons.
+  segmentOn: { backgroundColor: color.bg.inverse },
   chip: {
     flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 40, paddingHorizontal: space.md,
     borderRadius: radius.pill, borderWidth: 1.5, borderColor: color.border.control, backgroundColor: color.bg.raised,
   },
-  chipOn: { backgroundColor: color.bg.selected, borderColor: color.border.strong },
+  chipOn: { backgroundColor: color.bg.chosen, borderColor: color.action.select },
   tag: { minHeight: 32, borderWidth: 1, borderColor: color.border.control, backgroundColor: 'transparent' },
   dots: { flexDirection: 'row', gap: space.sm, alignItems: 'center' },
   dot: { width: 8, height: 8, borderRadius: radius.pill, backgroundColor: color.border.control },

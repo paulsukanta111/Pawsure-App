@@ -2,6 +2,12 @@ import type { SignalType, TaskType } from '@pawsure/domain';
 import type { IconName } from '../design';
 
 export const TASK_ICON: Record<TaskType, IconName> = { feeding: 'food', water: 'water', walk: 'activity', toilet_pad: 'home', medicine: 'medication', other: 'paw' };
+/** Colour bar per task type on list rows (decorative; the row text carries the meaning). */
+export const TASK_ACCENT: Record<TaskType, 'orange' | 'sky' | 'green' | 'teal' | 'lilac' | 'yellow'> = {
+  feeding: 'orange', water: 'sky', walk: 'green', toilet_pad: 'teal', medicine: 'lilac', other: 'yellow',
+};
+/** Colour bar per health reminder kind. */
+export const HEALTH_ACCENT = (kind: string) => (kind === 'vaccine' ? 'sky' : kind === 'deworming' ? 'lilac' : 'green') as 'sky' | 'lilac' | 'green';
 export const TASK_LABEL: Record<TaskType, string> = { feeding: 'Feeding', water: 'Water', walk: 'Walk', toilet_pad: 'Toilet pad', medicine: 'Medicine', other: 'Other' };
 
 export const SIGNAL_LABEL: Record<SignalType, { label: string; icon: IconName; kind: 'task' | 'visit' }> = {

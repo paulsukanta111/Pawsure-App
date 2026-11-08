@@ -7,7 +7,7 @@ import {
   SectionHeader, space, StatusPill, Text, visitLabel,
 } from '../../design';
 import { CONSENT_TEXT } from '../../proto/HelperInvite';
-import { TASK_ICON } from '../../proto/labels';
+import { HEALTH_ACCENT, TASK_ACCENT, TASK_ICON } from '../../proto/labels';
 import { fmt, useProto } from '../../proto/store';
 
 const LEAVING_CHECKS = ['Water bowl full', 'Balcony and door secured', 'Expected return time set'];
@@ -86,7 +86,7 @@ export default function Today() {
       ) : null}
 
       {petIdx === 0 ? (<>
-      <Card tone="brand">
+      <Card tone="sky">
         <Text variant="h3">Who's caring today?</Text>
         {/* A choice, so a segmented control: it must not look like the action button below. */}
         <SegmentedTabs<'helper' | 'trusted' | 'friend'>
@@ -143,6 +143,7 @@ export default function Today() {
           <ListItem
             key={t.id}
             icon={TASK_ICON[t.type]}
+            accent={TASK_ACCENT[t.type]}
             title={t.title}
             subtitle={`${fmt(t.dueAt)} · ${carer === 'friend' ? 'Friend cover' : helper.name}`}
             meta={meta}
@@ -158,7 +159,7 @@ export default function Today() {
         const days = Math.round((h.dueOn.getTime() - now.getTime()) / 86_400_000);
         return (
           <ListItem key={h.id} icon={h.kind === 'vaccine' ? 'vaccine' : h.kind === 'deworming' ? 'medication' : 'calendar'} title={h.title} subtitle={h.detail}
-            meta={days <= 0 ? 'Today' : `Due in ${days} days`} metaTone={days <= 7 ? 'alert' : 'muted'} accent={i === 0} onPress={() => router.push('/health')} />
+            meta={days <= 0 ? 'Today' : `Due in ${days} days`} metaTone={days <= 7 ? 'alert' : 'muted'} accent={HEALTH_ACCENT(h.kind)} onPress={() => router.push('/health')} />
         );
       })}
 
