@@ -68,6 +68,7 @@ export default function Me() {
       <ListItem icon="settings" title="Withdraw consent or delete" onPress={() => {}} />
       <SectionHeader title="About this prototype" />
       <ListItem icon="leaf" title="Style guide" subtitle="Design tokens and components" onPress={() => router.push('/styleguide')} />
+      <ListItem icon="paw" title="Icons" subtitle="The Pawsure icon library" onPress={() => router.push('/icons')} />
       <ListItem icon="settings" title="Pilot settings" subtitle="Rewards experiment and feature switches" onPress={() => router.push('/pilot')} />
       <ListItem icon="check" title="What this prototype covers" subtitle="PRD requirements shown and not yet shown" onPress={() => router.push('/coverage')} />
       <Button label="Replay onboarding" kind="outlined" onPress={() => dispatch({ type: 'replay_onboarding' })} full />

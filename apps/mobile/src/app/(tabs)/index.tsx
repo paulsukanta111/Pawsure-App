@@ -71,7 +71,7 @@ export default function Today() {
       </View>
 
       {petIdx > 0 ? (
-        <EmptyState scene="empty" title={`No routine for ${state.extraPets[petIdx - 1]!.name} yet`} body="Add feeding, walks or medicine and your helper gets a prompt for each." action="Add a task" onAction={() => router.push('/routine')} />
+        <EmptyState art="nothing-to-track" title={`No routine for ${state.extraPets[petIdx - 1]!.name} yet`} body="Add feeding, walks or medicine and your helper gets a prompt for each." action="Add a task" onAction={() => router.push('/routine')} />
       ) : null}
 
       {petIdx === 0 && helper.mode === 'tracked' && helper.consent !== 'given' ? (

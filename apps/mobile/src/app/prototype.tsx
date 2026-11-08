@@ -129,6 +129,7 @@ export default function Prototype() {
       <Group title="Verified carers (P2)" items={P2} />
       <SectionHeader title="Design" />
       <ListItem icon="leaf" title="Style guide" onPress={() => router.push('/styleguide')} />
+      <ListItem icon="paw" title="Icon library" onPress={() => router.push('/icons')} />
     </Screen>
   );
 }

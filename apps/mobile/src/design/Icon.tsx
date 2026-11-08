@@ -1,34 +1,32 @@
 /**
- * Iconography (moodboard section 04): rounded outline icons, 2px stroke, charcoal.
- * Screens use semantic names; swapping the icon set later only touches this file.
+ * Semantic icon names used across screens, mapped to the Pawsure icon library (src/icons).
+ * Screens say what they mean (`<Icon name="vaccine" />`); the library decides how it looks.
+ * Use the named components from src/icons directly when you need a specific variant.
  */
 import {
-  ArrowUp, Bell, CalendarDays, Cat, ChartColumn, Check, ChevronLeft, ChevronRight, Clock, Dog, Droplets,
-  Footprints, HandHeart, Heart, House, KeyRound, Leaf, MessageCircle, Mic, PawPrint, Phone, Pill, Plus, Scale,
-  Search, Settings, ShieldCheck, Smile, Soup, Syringe, TriangleAlert, User, Users,
-} from 'lucide-react-native';
+  ActivityIcon, AppointmentIcon, ArrowUpIcon, BackIcon, CatIcon, ChatIcon, ClockIcon, CouponsIcon, DogIcon, ErrorIcon,
+  FindCoverIcon, FoodIcon, ForwardIcon, FriendsIcon, HealthIcon, HelpRequestIcon, HomeIcon, InfoIcon, KeyIcon, LeafIcon,
+  MedicationIcon, MicIcon, NearbyIcon, OffersIcon, PetIcon, PhoneIcon, PlusIcon, ProfileIcon, ProtectionIcon, RecordsIcon,
+  ReminderIcon, RewardsIcon, SearchIcon, SelectIcon, SettingsIcon, SmileIcon, SuccessIcon, TodoIcon, VaccinationIcon,
+  VetVisitIcon, VitalsIcon, WarningIcon, WaterIcon, WeightIcon, type IconComponent,
+} from '../icons';
 import { color, icon as iconToken } from './theme';
 
 export const icons = {
-  paw: PawPrint, dog: Dog, cat: Cat, food: Soup, health: Heart, calendar: CalendarDays, vaccine: Syringe,
-  medication: Pill, activity: Footprints, reminder: Bell, home: House, stats: ChartColumn, community: MessageCircle,
-  settings: Settings, profile: User, friends: Users, care: HandHeart, smile: Smile, leaf: Leaf, water: Droplets,
-  weight: Scale, key: KeyRound, phone: Phone, shield: ShieldCheck, clock: Clock, alert: TriangleAlert, plus: Plus,
-  search: Search, check: Check, chevronRight: ChevronRight, chevronLeft: ChevronLeft, arrowUp: ArrowUp, mic: Mic,
-} as const;
+  paw: PetIcon, dog: DogIcon, cat: CatIcon, food: FoodIcon, health: VitalsIcon, calendar: AppointmentIcon, vaccine: VaccinationIcon,
+  medication: MedicationIcon, activity: ActivityIcon, reminder: ReminderIcon, home: HomeIcon, stats: HealthIcon, community: ChatIcon,
+  settings: SettingsIcon, profile: ProfileIcon, friends: FriendsIcon, care: HelpRequestIcon, findCover: FindCoverIcon, smile: SmileIcon,
+  leaf: LeafIcon, water: WaterIcon, weight: WeightIcon, key: KeyIcon, phone: PhoneIcon, shield: ProtectionIcon, clock: ClockIcon,
+  alert: WarningIcon, error: ErrorIcon, info: InfoIcon, success: SuccessIcon, plus: PlusIcon, search: SearchIcon, check: SelectIcon,
+  chevronRight: ForwardIcon, chevronLeft: BackIcon, arrowUp: ArrowUpIcon, mic: MicIcon, nearby: NearbyIcon, rewards: RewardsIcon,
+  coupons: CouponsIcon, offers: OffersIcon, records: RecordsIcon, todo: TodoIcon, vetVisit: VetVisitIcon,
+} satisfies Record<string, IconComponent>;
 
 export type IconName = keyof typeof icons;
 
-export function Icon({ name, size = iconToken.md, tint = color.text.primary, label }: { name: IconName; size?: number; tint?: string; label?: string }) {
+export function Icon({ name, size = iconToken.md, tint = color.text.primary, label, filled, accent }: {
+  name: IconName; size?: number; tint?: string; label?: string; filled?: boolean; accent?: boolean;
+}) {
   const Cmp = icons[name];
-  return (
-    <Cmp
-      size={size}
-      color={tint}
-      strokeWidth={iconToken.stroke}
-      accessibilityLabel={label}
-      accessible={!!label}
-      importantForAccessibility={label ? 'yes' : 'no-hide-descendants'}
-    />
-  );
+  return <Cmp size={size} color={tint} label={label} filled={filled} accent={accent} />;
 }

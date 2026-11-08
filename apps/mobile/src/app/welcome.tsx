@@ -4,14 +4,14 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { Button, color, radius, Scene, Screen, space, Text, type SceneName } from '../design';
+import { Button, Character, color, radius, Screen, space, Text, type CharacterName } from '../design';
 import { WELCOME_HERO } from '../design/welcomeHero';
 
-type Slide = { art: 'hero' | SceneName; title: string; body: string };
+type Slide = { art: 'hero' | CharacterName; title: string; body: string };
 const SLIDES: Slide[] = [
   { art: 'hero', title: "When help can't come, ask friends.", body: 'Pawsure finds a nearby friend who is free and comfortable with the task. You approve every message.' },
-  { art: 'welcome', title: "Know who's caring, every day.", body: 'See whether planned care for your pet actually happened, with honest evidence instead of empty reassurance.' },
-  { art: 'helper', title: 'Your helper checks in on WhatsApp.', body: 'A photo of the bowl, a voice note or a free missed call. Nothing to install, never a face photo.' },
+  { art: 'crewGroup', title: "Know who's caring, every day.", body: 'See whether planned care for your pet actually happened, with honest evidence instead of empty reassurance.' },
+  { art: 'poseKittoLaptop', title: 'Your helper checks in on WhatsApp.', body: 'A photo of the bowl, a voice note or a free missed call. Nothing to install, never a face photo.' },
 ];
 
 export default function Welcome() {
@@ -27,7 +27,7 @@ export default function Welcome() {
         {slide.art === 'hero' ? (
           <Image source={WELCOME_HERO} resizeMode="contain" accessibilityLabel="A dog and a cat in Pawsure hoodies; the dog checks a phone while a friend gives a thumbs up" style={{ width: heroW, height: heroH }} />
         ) : (
-          <Scene name={slide.art} height={260} label={slide.title} />
+          <View style={{ height: heroH, justifyContent: 'center' }}><Character name={slide.art} height={Math.min(heroH, 250)} label={slide.title} /></View>
         )}
         <View style={st.copy}>
           <Text variant="h2" align="center" style={st.title}>{slide.title}</Text>

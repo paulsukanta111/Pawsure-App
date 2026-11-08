@@ -31,7 +31,7 @@ export default function HelperWhatsApp() {
     return (
       <Screen>
         <NoticeBanner icon="phone" title={`Simulation of ${h.name}'s phone`} body="She never installs an app." />
-        <EmptyState scene="helper" title="No invitation yet" body={`Neha hasn't invited ${h.name} yet.`} action="Go to invite" onAction={() => router.push(state.onboarded ? '/helper-invite' : '/onboarding/invite-helper')} />
+        <EmptyState art="no-messages" title="No invitation yet" body={`Neha hasn't invited ${h.name} yet.`} action="Go to invite" onAction={() => router.push(state.onboarded ? '/helper-invite' : '/onboarding/invite-helper')} />
       </Screen>
     );
   }

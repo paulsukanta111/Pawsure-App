@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import {
   Button, Card, Checkbox, Chip, color, contrastRatio, Icon, icons, ListItem, Logo, MetricCard, palette,
   ProgressDots, radius, Screen, SectionHeader, SegmentedTabs, space, StatusPill, Text, TextField, Toggle, type, type IconName,
-  BrunoFace, EmptyState, ErrorState, Loading, OtpInput, Scene, Skeleton, StepHeader,
+  Character, EmptyState, ErrorState, Loading, OtpInput, Skeleton, StepHeader,
 } from '../design';
 
 const SWATCHES: { name: string; hex: string; use: string }[] = [
@@ -112,11 +112,12 @@ export default function StyleGuide() {
       </Section>
 
       <Section n="07" title="Illustration style">
-        <Text variant="caption" tone="muted">Bruno: an original flat Indie dog with a yellow bandana. Thick charcoal outline, moodboard palette.</Text>
+        <Text variant="caption" tone="muted">The Pet Crew, supplied by the Pawsure team: bold rounded outlines, yellow headbands, flat fills.</Text>
         <View style={st.row}>
-          <BrunoFace size={72} mood="happy" /><BrunoFace size={72} mood="wink" /><BrunoFace size={72} mood="sleepy" /><BrunoFace size={72} mood="worried" />
+          {(['avatarKitto', 'avatarSparky', 'avatarBunji', 'avatarToby', 'avatarHedge', 'avatarPiku'] as const).map((n) => <Character key={n} name={n} height={56} />)}
         </View>
-        <Scene name="welcome" height={150} />
+        <Character name="crewGroup" width={280} />
+        <Text variant="caption" tone="muted">Icons: see the full library on the Icons page (Me → Icons).</Text>
       </Section>
 
       <Section n="10" title="States">

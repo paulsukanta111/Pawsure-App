@@ -65,18 +65,23 @@ export const color = {
 } as const;
 
 /**
- * Illustration colours (Bruno mascot). Decorative only: never used for text or
- * controls, so they sit outside the contrast-tested semantic tokens.
+ * Icon fills, sampled from the Pawsure iconography sheet. Always used inside a charcoal
+ * outline (the outline carries the 3:1 non-text contrast), so they are decorative.
  */
-export const art = {
-  fur: '#D9A26B',
-  furDark: '#9A6438',
-  muzzle: '#F6E3C4',
-  line: palette.charcoal,
-  bandana: palette.goldenYellow,
-  blush: '#F2B8A0',
-  sky: '#FFF6D6',
+export const iconFill = {
+  yellow: palette.goldenYellow,
+  orange: '#F98442',
+  amber: '#FCBA4E',
+  green: '#8ADB4A',
+  lime: '#C6EA6C',
+  sky: '#B4E4F6',
+  teal: '#3DBFA8',
+  white: '#FFFFFF',
+  paper: '#FEF8F1',
 } as const;
+
+/** Icon geometry: 24x24 UI icons, 48x48 feature illustrations, one stroke weight. */
+export const iconSpec = { grid: 24, largeGrid: 48, stroke: 2, largeStroke: 2.5, sizes: { xs: 16, sm: 20, md: 24, lg: 32, xl: 48 } } as const;
 
 /** Spacing scale (px): 4 8 12 16 24 32. */
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;

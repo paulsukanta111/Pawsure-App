@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import {
-  Button, Card, Chip, IconTile, KeyValue, Scene, LineChart, ListItem, PetAvatar, Screen, SectionHeader, SegmentedTabs, space, Text,
+  Button, Card, Character, Chip, color, IconTile, KeyValue, LineChart, radius, ListItem, PetAvatar, Screen, SectionHeader, SegmentedTabs, space, Text,
 } from '../../design';
 import { TASK_ICON } from '../../proto/labels';
 import { fmt, useProto } from '../../proto/store';
@@ -17,7 +17,9 @@ export default function Pet() {
   const pet = state.pet;
   return (
     <Screen>
-      <Scene name="home" height={180} label={`${pet.name} at home`} />
+      <View style={{ alignItems: 'center', backgroundColor: color.bg.paper, borderRadius: radius.xl, borderWidth: 1, borderColor: color.border.subtle, paddingTop: space.md, overflow: 'hidden' }}>
+        <Character name={pet.species === 'cat' ? 'avatarKitto' : 'poseSparky'} height={180} label={`${pet.name}`} />
+      </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
         <PetAvatar species={pet.species} size={56} />
         <View style={{ flex: 1 }}>

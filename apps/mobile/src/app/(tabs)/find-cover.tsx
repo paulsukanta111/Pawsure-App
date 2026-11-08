@@ -219,7 +219,7 @@ export default function FindCover() {
       {search?.state === 'awaiting_owner_approval' && matches && phase !== 'searching' ? (
         matches.ranked.length === 0 ? (
           <>
-            <EmptyState scene="empty" title="No friend is free for this" body={`${matches.excluded.length} friends checked: ${[...new Set(matches.excluded.flatMap((e) => e.reasons.map((r) => EXCLUSION_TEXT[r] ?? r)))].join(', ')}.`} />
+            <EmptyState art="no-results" title="No friend is free for this" body={`${matches.excluded.length} friends checked: ${[...new Set(matches.excluded.flatMap((e) => e.reasons.map((r) => EXCLUSION_TEXT[r] ?? r)))].join(', ')}.`} />
             <Button label="Try another time" onPress={() => { dispatch({ type: 'clear_cover' }); setPhase('confirm'); }} full />
             <Button label="Invite more friends" kind="secondary" onPress={() => router.dismissTo('/friends')} full />
             <Button label="Ask nearby ID-checked members" kind="outlined" disabled onPress={() => {}} full />
@@ -306,7 +306,7 @@ export default function FindCover() {
             </>
           ) : null}
           {search.state === 'expired' ? (
-            <EmptyState scene="empty" title="No reply in time" body="Requests expire after 15 minutes so friends aren't chased. Try another time, or ask your backup." action="Try again" onAction={() => { dispatch({ type: 'clear_cover' }); setPhase('confirm'); }} />
+            <EmptyState art="no-messages" title="No reply in time" body="Requests expire after 15 minutes so friends aren't chased. Try another time, or ask your backup." action="Try again" onAction={() => { dispatch({ type: 'clear_cover' }); setPhase('confirm'); }} />
           ) : null}
           {done ? <Button label="New request" kind="secondary" onPress={startOver} full />
             : <Button label="Cancel request" kind="outlined" onPress={() => dispatch({ type: 'friend', event: { type: 'owner_cancels', at: now, reason: 'owner cancelled' } })} full />}

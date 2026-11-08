@@ -61,6 +61,7 @@ function Routes() {
         <Stack.Screen name="later/carer" options={{ title: 'Carer profile (P2 preview)' }} />
         <Stack.Screen name="return-check" options={{ title: 'Return check', presentation: 'modal' }} />
         <Stack.Screen name="styleguide" options={{ title: 'Style guide' }} />
+        <Stack.Screen name="icons" options={{ title: 'Icons' }} />
         <Stack.Screen name="prototype" options={{ title: 'All screens' }} />
         <Stack.Screen name="notifications" options={{ title: 'Alerts' }} />
         <Stack.Screen name="task/[id]" options={{ title: 'Task' }} />

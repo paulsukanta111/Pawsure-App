@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, View, type ViewStyle } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path, Polyline } from 'react-native-svg';
 import type { TaskConfidence } from '@pawsure/domain';
+import { CrewAvatar } from './Character';
 import { Icon, type IconName } from './Icon';
 import { Text } from './Text';
 import { color, confidenceStyle, radius, space, touchTarget } from './theme';
@@ -129,9 +130,9 @@ export function StatusPill({ value }: { value: TaskConfidence | 'pending' }) {
   );
 }
 
-/** Pet avatar: yellow disc with species icon until the owner adds a photo. */
+/** Pet avatar: the owner's photo once added; until then the Pet Crew avatar for the species. */
 export function PetAvatar({ species, size = 48 }: { species: 'dog' | 'cat'; size?: number }) {
-  return <IconTile name={species} size={size} tone="yellow" />;
+  return <CrewAvatar species={species} size={size} />;
 }
 
 /** Pet switcher pill (moodboard dashboard "Mochi / Bruno"). */

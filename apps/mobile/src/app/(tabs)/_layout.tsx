@@ -1,9 +1,8 @@
 // Navigation frozen in PS-108: Today · Find cover · Friends · Pet · Me.
 import { Tabs } from 'expo-router/js-tabs';
-import { View } from 'react-native';
-import { color, Icon, radius, type, type IconName } from '../../design';
+import { color, Icon, type, type IconName } from '../../design';
 
-const TAB_ICON: Record<string, IconName> = { index: 'home', 'find-cover': 'care', friends: 'friends', pet: 'paw', me: 'profile' };
+const TAB_ICON: Record<string, IconName> = { index: 'home', 'find-cover': 'findCover', friends: 'friends', pet: 'paw', me: 'profile' };
 
 export default function TabsLayout() {
   return (
@@ -16,10 +15,9 @@ export default function TabsLayout() {
         // Labels under icons at every width, so the active pill never overlaps the label on tablets.
         tabBarLabelPosition: 'below-icon',
         tabBarStyle: { height: 68, paddingTop: 6, paddingBottom: 8, backgroundColor: color.bg.card, borderTopColor: color.border.subtle },
+        // Selected tab = filled Pawsure icon; others are plain outlines.
         tabBarIcon: ({ focused }) => (
-          <View style={{ paddingHorizontal: 14, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: focused ? color.action.primary : 'transparent' }}>
-            <Icon name={TAB_ICON[route.name] ?? 'paw'} size={22} tint={focused ? color.text.onAction : color.text.muted} />
-          </View>
+          <Icon name={TAB_ICON[route.name] ?? 'paw'} size={26} tint={focused ? color.text.primary : color.text.muted} filled={focused} accent={focused} />
         ),
       })}
     >

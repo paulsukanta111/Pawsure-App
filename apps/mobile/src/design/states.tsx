@@ -4,17 +4,26 @@
  */
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ComponentRef, type ReactNode } from 'react';
 import { Animated, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { Scene, type SceneName } from './art';
+import { Character, type CharacterName } from './Character';
 import { Button } from './controls';
 import { Icon, type IconName } from './Icon';
 import { ProgressDots } from './controls';
 import { Text } from './Text';
 import { color, radius, space, touchTarget, type } from './theme';
 
-export function EmptyState({ scene = 'empty', title, body, action, onAction }: { scene?: SceneName; title: string; body?: string; action?: string; onAction?: () => void }) {
+/** Which Pet Crew illustration each empty state uses (from the team's iconography sheet). */
+export type EmptyArt = 'no-results' | 'nothing-to-track' | 'no-appointments' | 'no-messages';
+const EMPTY_ART: Record<EmptyArt, CharacterName> = {
+  'no-results': 'emptyNoResults',
+  'nothing-to-track': 'emptyNothingToTrack',
+  'no-appointments': 'emptyNoAppointments',
+  'no-messages': 'emptyNoMessages',
+};
+
+export function EmptyState({ art = 'nothing-to-track', title, body, action, onAction }: { art?: EmptyArt; title: string; body?: string; action?: string; onAction?: () => void }) {
   return (
     <View style={s.state} accessibilityRole="summary">
-      <Scene name={scene} height={150} />
+      <Character name={EMPTY_ART[art]} height={130} />
       <Text variant="subheading" align="center">{title}</Text>
       {body ? <Text variant="caption" tone="muted" align="center">{body}</Text> : null}
       {action && onAction ? <Button label={action} onPress={onAction} /> : null}

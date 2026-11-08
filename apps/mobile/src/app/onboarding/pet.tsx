@@ -2,7 +2,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { BrunoFace, Button, Chip, PhotoPicker, Screen, space, StepHeader, Text, TextField } from '../../design';
+import { Button, Character, Chip, PhotoPicker, Screen, space, StepHeader, Text, TextField } from '../../design';
 import { useProto } from '../../proto/store';
 
 export default function OnboardPet() {
@@ -12,7 +12,7 @@ export default function OnboardPet() {
   return (
     <Screen>
       <StepHeader step={3} of={6} title="Your pet" body="Only the name is required now." />
-      <PhotoPicker label="Add a photo" value={photo} onPick={() => setPhoto(true)} art={<BrunoFace size={120} />} />
+      <PhotoPicker label="Add a photo" value={photo} onPick={() => setPhoto(true)} art={<Character name={p.species === 'cat' ? 'avatarKitto' : 'avatarSparky'} width={104} />} />
       <TextField label="Pet's name" value={p.name} onChangeText={(v) => setP({ ...p, name: v })} />
       <Text variant="label">Species</Text>
       <View style={{ flexDirection: 'row', gap: space.sm }}>

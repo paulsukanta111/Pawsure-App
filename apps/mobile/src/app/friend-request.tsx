@@ -16,7 +16,7 @@ export default function FriendRequest() {
   if (!search || !ids.length) {
     return (
       <Screen>
-        <EmptyState scene="friends" title="No request yet" body="Send a cover request from Find cover first." action="Go to Find cover" onAction={() => router.dismissTo('/find-cover')} />
+        <EmptyState art="no-messages" title="No request yet" body="Send a cover request from Find cover first." action="Go to Find cover" onAction={() => router.dismissTo('/find-cover')} />
       </Screen>
     );
   }
