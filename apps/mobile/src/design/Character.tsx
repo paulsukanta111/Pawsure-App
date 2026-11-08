@@ -20,13 +20,21 @@ export function Character({ name, height, width, label }: { name: CharacterName;
   );
 }
 
-/** Round avatar from the Pet Crew (Sparky for dogs, Kitto for cats). */
-export function CrewAvatar({ species, size = 48 }: { species: 'dog' | 'cat'; size?: number }) {
+/**
+ * Round avatar on white. The avatar crops are square with a pure white backdrop, so the
+ * face fills the circle cleanly with no coloured corners showing.
+ */
+export function CharacterAvatar({ name, size = 48, label }: { name: CharacterName; size?: number; label?: string }) {
   return (
-    <View style={{ width: size, height: size, borderRadius: radius.pill, backgroundColor: color.action.primary, borderWidth: 1.5, borderColor: color.border.strong, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-      <Character name={species === 'cat' ? 'avatarKitto' : 'avatarSparky'} width={Math.round(size * 0.86)} />
+    <View style={{ width: size, height: size, borderRadius: radius.pill, backgroundColor: color.bg.raised, borderWidth: 1, borderColor: color.border.subtle, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      <Character name={name} width={Math.round(size * 0.92)} height={Math.round(size * 0.92)} label={label} />
     </View>
   );
+}
+
+/** Round avatar from the Pet Crew (Sparky for dogs, Kitto for cats). */
+export function CrewAvatar({ species, size = 48 }: { species: 'dog' | 'cat'; size?: number }) {
+  return <CharacterAvatar name={species === 'cat' ? 'avatarKitto' : 'avatarSparky'} size={size} />;
 }
 
 export type { CharacterName };

@@ -3,10 +3,9 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import {
-  Button, Card, Character, Checkbox, Chip, color, confidenceStyle, EmptyState, Icon, IconButton, ListItem, NoticeBanner, PetChip, radius, Screen,
+  Button, Card, CharacterAvatar, Checkbox, Chip, color, confidenceStyle, EmptyState, Icon, IconButton, ListItem, NoticeBanner, PetChip, radius, Screen,
   SectionHeader, space, StatusPill, Text, visitLabel,
 } from '../../design';
-import { DemoClock } from '../../proto/DemoClock';
 import { CONSENT_TEXT } from '../../proto/HelperInvite';
 import { TASK_ICON } from '../../proto/labels';
 import { fmt, useProto } from '../../proto/store';
@@ -43,14 +42,13 @@ export default function Today() {
               <IconButton name="reminder" label={`Alerts, ${openAlerts.length} new`} onPress={() => router.push('/notifications')} />
               {openAlerts.length ? <View style={st.badge}><Text variant="small" tone="inverse">{openAlerts.length}</Text></View> : null}
             </View>
-            <Pressable accessibilityRole="button" accessibilityLabel="Your profile" onPress={() => router.navigate('/me')} style={st.me}>
-              <Character name="avatarToby" height={48} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Your profile" onPress={() => router.navigate('/me')}>
+              <CharacterAvatar name="avatarToby" size={48} />
             </Pressable>
           </View>
         </View>
       }
     >
-      <DemoClock />
 
       {openAlerts.slice(0, 2).map((a) => (
         <Pressable key={a.id} accessibilityRole="button" onPress={() => router.push(a.taskId ? `/missed/${a.taskId}` : '/emergency')}>
@@ -190,7 +188,6 @@ export default function Today() {
 }
 
 const st = StyleSheet.create({
-  me: { width: 48, height: 48, borderRadius: radius.pill, overflow: 'hidden', backgroundColor: color.action.primary, borderWidth: 1.5, borderColor: color.border.strong, alignItems: 'center', justifyContent: 'center' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' },
   badge: { position: 'absolute', top: 4, right: 4, minWidth: 20, height: 20, borderRadius: radius.pill, backgroundColor: color.status.alert, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },

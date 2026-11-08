@@ -29,9 +29,10 @@ export function Card({ children, tone = 'plain', style }: { children: ReactNode;
 }
 const tones: Record<string, ViewStyle> = {
   plain: {},
-  alert: { backgroundColor: color.status.alertTint, borderColor: color.status.alert },
-  calm: { backgroundColor: color.status.successTint, borderColor: color.status.success },
-  brand: { backgroundColor: color.bg.selected, borderColor: color.border.strong },
+  // Tinted cards carry no outline: the fill, icon and words mark them, not a dark border.
+  alert: { backgroundColor: color.status.alertTint, borderColor: 'transparent' },
+  calm: { backgroundColor: color.status.successTint, borderColor: 'transparent' },
+  brand: { backgroundColor: color.bg.selected, borderColor: 'transparent' },
 };
 
 export function SectionHeader({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) {
@@ -174,7 +175,7 @@ export function PetAvatar({ species, size = 48 }: { species: 'dog' | 'cat'; size
 export function PetChip({ name, detail, species, selected, onPress }: { name: string; detail: string; species: 'dog' | 'cat'; selected?: boolean; onPress: () => void }) {
   return (
     <Pressable accessibilityRole="button" accessibilityState={{ selected: !!selected }} onPress={onPress} style={[s.petChip, selected && s.petChipOn]}>
-      <View style={[s.petAvatar, selected && { backgroundColor: color.action.primary }]}><PetAvatar species={species} size={40} /></View>
+      <PetAvatar species={species} size={44} />
       <View>
         <Text variant="label">{name}</Text>
         <Text variant="small" tone="muted">{detail}</Text>
@@ -222,7 +223,6 @@ const s = StyleSheet.create({
   quick: { alignItems: 'center', gap: space.xs, minWidth: 64 },
   quickCircle: { width: 56, height: 56, borderRadius: radius.pill, borderWidth: 1.5, borderColor: color.border.subtle, backgroundColor: color.bg.card, alignItems: 'center', justifyContent: 'center' },
   quickCircleOn: { backgroundColor: color.bg.selected, borderColor: color.action.primary, borderWidth: 2 },
-  petAvatar: { width: 44, height: 44, borderRadius: radius.pill, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: color.bg.sunken },
   pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderRadius: radius.pill, paddingHorizontal: space.md, paddingVertical: 2 },
   petChip: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm, paddingLeft: space.sm, paddingRight: space.lg, borderRadius: radius.lg, borderWidth: 2, borderColor: 'transparent', minHeight: touchTarget },
   petChipOn: { borderColor: color.action.primary, backgroundColor: color.bg.selected },

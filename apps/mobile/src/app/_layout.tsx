@@ -67,6 +67,7 @@ function Routes() {
         <Stack.Screen name="return-check" options={{ title: 'Return check', presentation: 'modal' }} />
         <Stack.Screen name="styleguide" options={{ title: 'Style guide' }} />
         <Stack.Screen name="icons" options={{ title: 'Icons' }} />
+        <Stack.Screen name="demo-time" options={{ title: 'Demo time' }} />
         <Stack.Screen name="prototype" options={{ title: 'All screens' }} />
         <Stack.Screen name="notifications" options={{ title: 'Alerts' }} />
         <Stack.Screen name="task/[id]" options={{ title: 'Task' }} />

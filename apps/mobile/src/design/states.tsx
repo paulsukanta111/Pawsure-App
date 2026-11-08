@@ -178,7 +178,7 @@ export function IconBadge({ icon, label }: { icon: IconName; label: string }) {
 
 const s = StyleSheet.create({
   state: { alignItems: 'center', gap: space.sm, padding: space.lg, borderRadius: radius.xl, backgroundColor: color.bg.card, borderWidth: 1, borderColor: color.border.subtle },
-  error: { backgroundColor: color.status.alertTint, borderColor: color.status.alert },
+  error: { backgroundColor: color.status.alertTint, borderColor: 'transparent' },
   loading: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.sm },
   dot: { width: 8, height: 8, borderRadius: radius.pill, backgroundColor: color.text.primary },
   skel: { height: 14, borderRadius: radius.sm, backgroundColor: color.border.subtle },

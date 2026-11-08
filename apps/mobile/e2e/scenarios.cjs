@@ -20,8 +20,19 @@ const fs = require('fs');
   const tab = (t) => p.getByRole('tab', { name: t, exact: true }).click();
   const back = () => p.getByRole('link', { name: 'Back' }).filter({ visible: true }).last().click();
   const row = (t) => p.getByRole('button').filter({ hasText: t, visible: true }).first();
-  const jump = (label) => p.getByRole('button', { name: label }).filter({ visible: true }).first().click();
-  const allScreens = async () => { await btn('All screens').click(); await see('Guided demos'); };
+  // The demo clock lives under Me → Demo time (and on simulation screens). From a tab, go there and come back to Today.
+  const jump = async (label) => {
+    const here = p.getByRole('button', { name: label }).filter({ visible: true });
+    if (await here.count()) return here.first().click();
+    await tab('Me'); await row('Demo time').click();
+    await p.getByRole('button', { name: label }).filter({ visible: true }).first().click();
+    await back(); await tab('Today');
+  };
+  const allScreens = async () => {
+    // From any tab, the button lives on Me (the clock chip that used to sit on Today is gone).
+    if (await p.getByRole('tab', { name: 'Me', exact: true }).filter({ visible: true }).count()) await tab('Me');
+    await btn('All screens').click(); await see('Guided demos');
+  };
 
   await p.goto(PAGE);
   await step('1 onboarding: welcome, OTP, 6 steps', async () => {
@@ -110,7 +121,7 @@ const fs = require('fs');
     await btn('Missed call on arrival').click();
     for (const d of code) await btn(d).click();
     await btn('Send code').click();
-    await back(); await back(); await see('Neha!');
+    await back(); await back(); await tab('Today'); await see('Neha!');
     const feed = await row('8:00 pm · Sunita').innerText();
     if (!feed.includes('Not confirmed') || !/Someone came|visit/i.test(feed)) throw new Error('feed: ' + feed.slice(0, 120));
   });

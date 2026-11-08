@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import {
-  Button, Card, Character, Chip, color, Icon, IconButton, KeyValue, LineChart, ListItem, MetricRow, QuickAction, radius, Screen, SectionHeader,
+  Button, Card, Character, CharacterAvatar, Chip, color, Icon, IconButton, KeyValue, LineChart, ListItem, MetricRow, QuickAction, radius, Screen, SectionHeader,
   SegmentedTabs, space, Text,
 } from '../../design';
 import { TASK_ICON } from '../../proto/labels';
@@ -22,7 +22,9 @@ export default function Pet() {
       {/* Mockup pet profile: the character on a soft yellow circle. */}
       <View style={{ alignItems: 'center', justifyContent: 'flex-end', height: 210 }}>
         <View style={{ position: 'absolute', bottom: 0, width: 200, height: 200, borderRadius: radius.pill, backgroundColor: color.bg.selected }} />
-        <Character name={pet.species === 'cat' ? 'avatarKitto' : 'poseSparky'} height={200} label={`${pet.name}`} />
+        {pet.species === 'cat'
+          ? <View style={{ marginBottom: 10 }}><CharacterAvatar name="avatarKitto" size={180} label={pet.name} /></View>
+          : <Character name="poseSparky" height={200} label={pet.name} />}
       </View>
       <View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>

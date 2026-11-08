@@ -325,7 +325,7 @@ const st = StyleSheet.create({
   head: { flexDirection: 'row', gap: space.md, alignItems: 'center' },
   chat: { gap: space.sm },
   bubble: { maxWidth: '88%', padding: space.md, borderRadius: radius.lg, borderWidth: 1, gap: 2 },
-  me: { alignSelf: 'flex-end', backgroundColor: color.bg.selected, borderColor: color.border.strong, borderTopRightRadius: radius.xs },
+  me: { alignSelf: 'flex-end', backgroundColor: color.bg.selected, borderColor: color.bg.selected, borderTopRightRadius: radius.xs },
   them: { alignSelf: 'flex-start', backgroundColor: color.bg.raised, borderColor: color.border.subtle, borderTopLeftRadius: radius.xs },
   example: { padding: space.md, borderRadius: radius.md, borderWidth: 1, borderColor: color.border.subtle, backgroundColor: color.bg.canvas },
   preview: { padding: space.md, borderRadius: radius.md, backgroundColor: color.bg.canvas, borderWidth: 1, borderStyle: 'dashed', borderColor: color.border.control, gap: 4 },

@@ -17,7 +17,7 @@ export default function Certificate() {
         <KeyValue k="Audited" v="12 Oct 2026" />
         <KeyValue k="Valid until" v="12 Jan 2027" />
         <View style={{ alignItems: 'center', paddingVertical: space.md }}>
-          <View style={{ padding: space.sm, backgroundColor: color.bg.raised, borderRadius: radius.md, borderWidth: 1, borderColor: color.border.strong }}>
+          <View style={{ padding: space.sm, backgroundColor: color.bg.raised, borderRadius: radius.md, borderWidth: 1, borderColor: color.border.subtle }}>
             <Svg width={132} height={132} viewBox="0 0 11 11" accessibilityLabel="Sample QR placeholder">
               {CELLS.map((on, i) => (on ? <Rect key={i} x={i % 11} y={Math.floor(i / 11)} width={1} height={1} fill={color.text.primary} /> : null))}
               <Rect x={0} y={0} width={3} height={3} fill={color.text.primary} /><Rect x={8} y={0} width={3} height={3} fill={color.text.primary} /><Rect x={0} y={8} width={3} height={3} fill={color.text.primary} />

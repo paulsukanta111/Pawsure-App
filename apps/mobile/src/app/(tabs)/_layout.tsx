@@ -1,6 +1,6 @@
 // Navigation frozen in PS-108: Today · Find cover · Friends · Pet · Me.
 // Styled after the app mockups: cream bar, bold label on the selected tab, and the primary
-// action (Find cover) as a raised yellow circle, like the mockup's centre "+" button.
+// action (Find cover) in a yellow circle, like the mockup's "+" button, kept inside the bar.
 import { Tabs } from 'expo-router/js-tabs';
 import { View } from 'react-native';
 import { color, Icon, radius, Text, type IconName } from '../../design';
@@ -18,14 +18,16 @@ export default function TabsLayout() {
         tabBarLabel: ({ focused, children }) => (
           <Text variant="small" style={{ fontFamily: focused ? 'Mukta_600SemiBold' : 'Mukta_400Regular', color: focused ? color.text.primary : color.text.muted }}>{children}</Text>
         ),
-        tabBarStyle: { height: 72, paddingTop: 6, paddingBottom: 8, backgroundColor: color.bg.card, borderTopColor: color.border.subtle, overflow: 'visible' },
+        tabBarStyle: { height: 76, paddingTop: 8, paddingBottom: 10, backgroundColor: color.bg.card, borderTopColor: color.border.subtle },
+        tabBarIconStyle: { width: 44, height: 40 },
         tabBarIcon: ({ focused }) =>
           route.name === 'find-cover' ? (
+            // Sits inside the bar (no overhang over the screen), icon optically centred.
             <View style={{
-              width: 52, height: 52, marginTop: -22, borderRadius: radius.pill, backgroundColor: color.action.primary,
-              borderWidth: 1.5, borderColor: color.border.strong, alignItems: 'center', justifyContent: 'center',
+              width: 40, height: 40, borderRadius: radius.pill, backgroundColor: color.action.primary,
+              alignItems: 'center', justifyContent: 'center',
             }}>
-              <Icon name="findCover" size={28} filled={focused} />
+              <Icon name="findCover" size={24} filled={focused} />
             </View>
           ) : (
             // Selected tab = filled Pawsure icon; others are plain outlines.

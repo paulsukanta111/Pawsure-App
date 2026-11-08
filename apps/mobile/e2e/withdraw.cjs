@@ -14,7 +14,7 @@ const fs = require('fs');
   const lunch = () => p.getByRole('button').filter({ hasText: '1:00 pm · Sunita', visible: true }).first().innerText();
   await vis('Neha!').waitFor();
   console.log('before: lunch', (await lunch()).includes('Confirmed') ? 'Confirmed' : 'other');
-  await btn('All screens').click(); await p.getByText('Helper on WhatsApp', { exact: true }).last().click();
+  await p.getByRole('tab', { name: 'Me', exact: true }).click(); await btn('All screens').click(); await p.getByText('Helper on WhatsApp', { exact: true }).last().click();
   await btn('थांबवा').click(); await vis('थांबवले').waitFor();
   await btn("See Neha's Today screen").click(); await vis('She stopped check-ins').waitFor();
   console.log('after withdraw: banner shown; lunch', (await lunch()).match(/Confirmed|Likely|Missed|Not confirmed/)?.[0], '(evidence no longer counted)');

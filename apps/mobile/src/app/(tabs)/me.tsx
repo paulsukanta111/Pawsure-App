@@ -5,13 +5,13 @@ import { Button, Card, ListItem, Logo, Screen, SectionHeader, Text } from '../..
 import { useAuth } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
 import { CONSENT_TEXT } from '../../proto/HelperInvite';
-import { useProto } from '../../proto/store';
+import { fmt, useProto } from '../../proto/store';
 
 interface Profile { name: string; household?: { name: string; society: string | null; tower: string | null } }
 
 export default function Me() {
   const auth = useAuth();
-  const { state, dispatch, wallet } = useProto();
+  const { state, dispatch, wallet, now } = useProto();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -43,6 +43,7 @@ export default function Me() {
           <Button label="All screens" icon="leaf" onPress={() => router.push('/prototype')} />
         </Card>
       ) : null}
+      <ListItem icon="clock" title="Demo time" subtitle={`Now ${fmt(now)} · jump ahead to see alerts`} onPress={() => router.push('/demo-time')} />
 
       <SectionHeader title="Care" />
       <ListItem icon="care" title="Care circle" subtitle={`${state.helper.name}, ${state.backup.name} (backup)`} onPress={() => router.push('/care-circle')} />

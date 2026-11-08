@@ -85,7 +85,7 @@ export function Avatar({ label, tone = 'beige', size = 40 }: { label: string; to
 /** Banner for screens that preview later releases (P1/P2) or simulate another person's channel. */
 export function NoticeBanner({ icon = 'leaf', title, body, tone = 'brand' }: { icon?: IconName; title: string; body?: string; tone?: 'brand' | 'alert' | 'calm' }) {
   const bg = tone === 'alert' ? color.status.alertTint : tone === 'calm' ? color.status.successTint : color.bg.selected;
-  const border = tone === 'alert' ? color.status.alert : tone === 'calm' ? color.status.success : color.border.strong;
+  const border = 'transparent';
   return (
     <View style={[s.banner, { backgroundColor: bg, borderColor: border }]}>
       <Icon name={icon} size={20} />
@@ -156,7 +156,7 @@ const s = StyleSheet.create({
   chatFoot: { padding: space.md, gap: space.sm, borderTopWidth: 1, borderTopColor: color.border.subtle, backgroundColor: color.bg.raised },
   bubble: { maxWidth: '86%', borderRadius: radius.lg, padding: space.md, gap: space.xs, borderWidth: 1 },
   bubbleThem: { backgroundColor: color.bg.raised, borderColor: color.border.subtle, borderTopLeftRadius: radius.xs },
-  bubbleMe: { backgroundColor: color.bg.selected, borderColor: color.border.strong, borderTopRightRadius: radius.xs },
+  bubbleMe: { backgroundColor: color.bg.selected, borderColor: color.bg.selected, borderTopRightRadius: radius.xs },
   photo: { width: 200, height: 120, borderRadius: radius.md, backgroundColor: color.bg.brand, alignItems: 'center', justifyContent: 'center', gap: space.xs },
   codeTag: { backgroundColor: color.bg.raised, borderRadius: radius.sm, paddingHorizontal: space.sm, borderWidth: 1, borderColor: color.border.strong },
   voice: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
